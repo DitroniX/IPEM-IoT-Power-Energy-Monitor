@@ -2,7 +2,7 @@
 
 ------------
 
-**This is a NEW board and is in Beta (Testing during Febuary 2023).  Expected final production boards, early March 2023**
+**This is a NEW board and is in Beta (Testing during February 2023).  Expected final production boards, early March 2023**
 
 Four versions of this board are planned.  The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
