@@ -2,6 +2,20 @@
 
 ------------
 
+**This is a NEW board and is in Beta (Testing during Febuary 2023).  Expected final production boards, early March 2023**
+
+Four versions of this board are planned.  The board layout is designed to be a flexible dual purpose.
+- ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
+- ATM90E32 or ATM90E36
+
+------------
+
+IPEM 'Beta Test PCB'
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E3x-SDK-1.2302-101-PCB-Top-Copper-3D.png?raw=true)
+
+IPEM 'Beta Test PCB'
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E3x-SDK-1.2302-101-PCB-Bottom-Copper.png?raw=true)
+
  The **IPEM IoT Power Energy Monitor** board main features:
  - **Compact** and **Flexible Design** SDK Board
 	 - All connections are **low voltage**, for **safe operation**
