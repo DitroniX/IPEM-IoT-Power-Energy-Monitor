@@ -4,7 +4,7 @@
 
 **This is a NEW board and is in Beta (Testing during February 2023).  Expected final production boards, early March 2023**
 
-Four fulled tested versions of this board are planned.  The board layout is designed to be a flexible dual purpose.
+Four fulley tested versions of this board are planned.  The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
 - ATM90E32 or ATM90E36
 
