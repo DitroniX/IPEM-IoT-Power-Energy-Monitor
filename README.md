@@ -2,19 +2,38 @@
 
 ------------
 
-**This is a NEW board and is in Beta (Testing during February 2023).  Expected final production boards, early March 2023**
+**This is a NEW board which has now completed Beta testing and final changes for production has been finallised.**
 
-Four fully tested versions of this board are planned.  The board layout is designed to be a flexible dual purpose.
+Four fully tested versions of this board are still planned. 
+
+The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
 - ATM90E32 or ATM90E36
 
+The first production run will be for ATM90E32, both ESP32 variants.
+
+**CT Clamp Inputs**
+The forth CT input on the ATM90E32 board, which is included for the ATM90E36, now remains on the board and goes to the ESP32 ADC.  So both 
+board variants will have FOUR CT inputs. 
+
+- **ATM90E32**
+ - 3 x CT Line inputs to the ATM chip.
+ - 1 x CT input to the ESP32 ADC.
+
+- **ATM90E36**
+ - 3 x CT Line inputs to the ATM chip.
+ - 1 x CT inputs to the ATM chip.
+
 ------------
 
-IPEM 'Beta Test PCB'
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E3x-SDK-1.2302-101-PCB-Top-Copper-3D.png?raw=true)
+IPEM 'Production PCB
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-ATM90E36-IoT-Power-Energy-Monitor-Board-Connections-1-scaled.jpg?raw=true)
 
-IPEM 'Beta Test PCB'
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E3x-SDK-1.2302-101-PCB-Bottom-Copper.png?raw=true)
+ATM90E32
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
+
+ATM90E36
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E36-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
 
  The **IPEM IoT Power Energy Monitor** board main features:
  - **Compact** and **Flexible Design** SDK Board
@@ -39,6 +58,7 @@ IPEM 'Beta Test PCB'
 		 - 1 x Phase Neutral CT Clamp
 		 - DMA Mode (Logging via SPI)
 		 - Power Modes Settings
+		 - Auto DMA selection opton via GP12
  - **24C64** EEPROM 
 	 - Parameter Settings
 	 - Logging
