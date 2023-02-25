@@ -26,14 +26,18 @@ board variants will have FOUR CT inputs.
 
 ------------
 
-IPEM 'Production PCB
+**IPEM 'Production PCB**
+
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-ATM90E36-IoT-Power-Energy-Monitor-Board-Connections-1-scaled.jpg?raw=true)
 
-ATM90E32
+**ATM90E32**
+
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
 
-ATM90E36
+**ATM90E36**
+
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E36-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
+
 
  The **IPEM IoT Power Energy Monitor** board main features:
  - **Compact** and **Flexible Design** SDK Board
