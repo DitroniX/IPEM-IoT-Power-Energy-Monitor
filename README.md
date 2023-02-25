@@ -100,3 +100,24 @@ board variants will have FOUR CT inputs.
  - PCB designed to fit into an BMC enclosure 
 	 - Also allows for the display to be included, or not. 
  - **Size** 70 mm x 53 mm
+
+
+Remember!
+
+Our SDKs are WeMos D1 Mini flashing compatible
+Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
+You can also set the BAUD rate to 921600 to speed up flashing.
+The SDK does NOT need external power to flash. It will take Power from the USB 5V.
+You will need to provide external 12V AC for power up of the Energy Monitor functions. You will need to provide a CT Current Clamp. Ideally YHDC SCT-013-000
+
+All test code is OPEN SOURCE and although is is not intended for real world use, it may be freely used, or modified as needed. It is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+See Example Code https://github.com/DitroniX/GTEM-Grid-Tie-Energy-Monitor/tree/main/Code/
+
+Further information can be found:
+
+Website https://ditronix.net/
+WIKI https://ditronix.net/wiki/
+GitHub https://github.com/DitroniX/
+Shop https://ditronix.net/shop/
+Dave Williams | G8PUO | DitroniX 1981-2023 | ditronix.net
