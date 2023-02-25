@@ -115,14 +115,12 @@ All test code is OPEN SOURCE and although is is not intended for real world use,
 
 See Example Code https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/tree/main/Code
 
-**Further information can be found:**
 
-Website https://ditronix.net/
+Further information can be found:
 
-WIKI https://ditronix.net/wiki/
-
-GitHub https://github.com/DitroniX/
-
-Shop https://ditronix.net/shop/
+- **Website** https://ditronix.net/
+- **WIKI**  https://ditronix.net/wiki/
+- **GitHub**  https://github.com/DitroniX/
+- **Shop**  https://ditronix.net/shop/
 
 Dave Williams | G8PUO | DitroniX 1981-2023 | ditronix.net
