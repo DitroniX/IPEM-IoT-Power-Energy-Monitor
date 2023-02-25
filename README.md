@@ -10,9 +10,10 @@ The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
 - ATM90E32 or ATM90E36
 
-The first production run will be for ATM90E32, both ESP32 variants.
+The initial production run will be for ATM90E32, both ESP32 variants.
 
 **CT Clamp Inputs**
+
 The forth CT input on the ATM90E32 board, which is included for the ATM90E36, now remains on the board and goes to the ESP32 ADC.  So both 
 board variants will have FOUR CT inputs. 
 
@@ -102,7 +103,7 @@ board variants will have FOUR CT inputs.
  - **Size** 70 mm x 53 mm
 
 
-Remember!
+**Remember!**
 
 Our SDKs are WeMos D1 Mini flashing compatible
 Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
@@ -114,10 +115,14 @@ All test code is OPEN SOURCE and although is is not intended for real world use,
 
 See Example Code https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/tree/main/Code
 
-Further information can be found:
+**Further information can be found:**
 
 Website https://ditronix.net/
+
 WIKI https://ditronix.net/wiki/
+
 GitHub https://github.com/DitroniX/
+
 Shop https://ditronix.net/shop/
+
 Dave Williams | G8PUO | DitroniX 1981-2023 | ditronix.net
