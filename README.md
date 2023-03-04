@@ -23,7 +23,7 @@ board variants will have FOUR CT inputs.
 
 - **ATM90E36**
  - 3 x CT Line inputs to the ATM chip.
- - 1 x CT inputs to the ATM chip.
+ - 1 x CT N input to the ATM chip or CT to ESP32 ADC
 
 ------------
 
