@@ -1,0 +1,20 @@
+
+For various reasons, our boards may require update.  The below list contains any revision information summary.
+
+  IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor Board SDK
+  Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+N 3+1 CT-Clamps Current Voltage Frequency 
+
+1.2303-201	Production Release, same as 1.2302-201 but has schematic text changes so both variants option CT4 with ESP32 ADC
+1.2302-201	Production Release
+1.2302-101	Beta Release
+
+
+
+Further information can be found:
+
+Website https://ditronix.net/
+WIKI https://ditronix.net/wiki/
+GitHub https://github.com/DitroniX
+Shop https://ditronix.net/shop/
+
+Dave Williams | G8PUO | DitroniX 1981-2023 | ditronix.net
