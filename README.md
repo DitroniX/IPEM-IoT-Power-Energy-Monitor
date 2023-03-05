@@ -2,7 +2,7 @@
 
 ------------
 
-**This is a NEW board which has now completed Beta testing and final changes for production has been finallised.**
+**This is a NEW board which has now completed Beta testing, final minor improvemnts added and is in production**
 
 Four fully tested versions of this board are still planned. 
 
