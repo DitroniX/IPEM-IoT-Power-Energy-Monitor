@@ -62,11 +62,6 @@ int idxActivePowerImportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active 
 int idxActivePowerImportCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power Import
 int idxTotalActivePowerImport = 0; // TotalActivePower - Pmean - Line Mean Active Power Import
 
-int idxActivePowerExportCT1 = 0;   // ActivePowerCT1 - Pmean - Line Mean Active Power Export
-int idxActivePowerExportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active Power Export
-int idxActivePowerExportCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power Export
-int idxTotalActivePowerExport = 0; // TotalActivePower - Pmean - Line Mean Active Power Export
-
 int idxReactivePowerCT1 = 0;   // ReactivePowerCT1 - Pmean - Line Mean Active Power
 int idxReactivePowerCT2 = 0;   // ReactivePowerCT2 - Pmean - Line Mean Active Power
 int idxReactivePowerCT3 = 0;   // ReactivePowerCT3 - Pmean - Line Mean Active Power

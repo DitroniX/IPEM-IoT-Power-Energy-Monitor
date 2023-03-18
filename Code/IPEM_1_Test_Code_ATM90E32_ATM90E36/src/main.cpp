@@ -68,7 +68,7 @@ boolean EnableDisplayBoardConfiguration = true; // Set to true to display board 
 // **************** FUNCTIONS AND ROUTINES ****************
 
 // Return Register Values from the ATM90E32, or ATM90E36, - and Display
-void DisplayRegisters(boolean DisplayFull = false)
+void DisplayRegisters(boolean DisplayFull = true)
 {
 
   if (DisplayFull == false) // Display Expanded Information
