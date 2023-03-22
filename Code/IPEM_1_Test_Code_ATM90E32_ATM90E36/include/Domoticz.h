@@ -62,6 +62,11 @@ int idxActivePowerImportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active 
 int idxActivePowerImportCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power Import
 int idxTotalActivePowerImport = 0; // TotalActivePower - Pmean - Line Mean Active Power Import
 
+int idxActivePowerExportCT1 = 0;   // ActivePowerCT1 - Pmean - Line Mean Active Power Export
+int idxActivePowerExportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active Power Export
+int idxActivePowerExportCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power Export
+int idxTotalActivePowerExport = 0; // TotalActivePower - Pmean - Line Mean Active Power Export
+
 int idxReactivePowerCT1 = 0;   // ReactivePowerCT1 - Pmean - Line Mean Active Power
 int idxReactivePowerCT2 = 0;   // ReactivePowerCT2 - Pmean - Line Mean Active Power
 int idxReactivePowerCT3 = 0;   // ReactivePowerCT3 - Pmean - Line Mean Active Power
@@ -294,6 +299,42 @@ void PublishDomoticzValues()
         if (idxTotalActivePower > 0)
         {
             PublishDomoticz(idxTotalActivePower, TotalActivePower, "TotalActivePower");
+        }
+
+        // Active Power Import ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
+        if (idxActivePowerImportCT1 > 0)
+        {
+            PublishDomoticz(idxActivePowerImportCT1, ActivePowerImportCT1, "ActivePowerImportCT1");
+        }
+        if (idxActivePowerImportCT2 > 0)
+        {
+            PublishDomoticz(idxActivePowerImportCT2, ActivePowerImportCT2, "ActivePowerImportCT2");
+        }
+        if (idxActivePowerImportCT3 > 0)
+        {
+            PublishDomoticz(idxActivePowerImportCT3, ActivePowerImportCT3, "ActivePowerImportCT3");
+        }
+        if (idxTotalActivePowerImport > 0)
+        {
+            PublishDomoticz(idxTotalActivePowerImport, TotalActivePowerImport, "TotalActivePowerImport");
+        }
+
+        // Active Power Export ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
+        if (idxActivePowerExportCT1 > 0)
+        {
+            PublishDomoticz(idxActivePowerExportCT1, ActivePowerExportCT1, "ActivePowerExportCT1");
+        }
+        if (idxActivePowerExportCT2 > 0)
+        {
+            PublishDomoticz(idxActivePowerExportCT2, ActivePowerExportCT2, "ActivePowerExportCT2");
+        }
+        if (idxActivePowerExportCT3 > 0)
+        {
+            PublishDomoticz(idxActivePowerExportCT3, ActivePowerExportCT3, "ActivePowerExportCT3");
+        }
+        if (idxTotalActivePowerExport > 0)
+        {
+            PublishDomoticz(idxTotalActivePowerExport, TotalActivePowerExport, "TotalActivePowerExport");
         }
 
         // Reactive Power ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower
