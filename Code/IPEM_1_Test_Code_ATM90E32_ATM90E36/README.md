@@ -1,8 +1,10 @@
-Further details on this code options can be found https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E32-ATM90E36-Test-Code
 
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS
+Further details on this code options can be found in our Wiki
+https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E32-ATM90E36-Test-Code
+
+  PCA 1.2302-20x - Test Code Firmware v1 - **Development Code - WORK-IN-PROGRESS**
   
-  CONFIGURATION (Setup for bring-up testing of the board)
+  **CONFIGURATION (Setup for bring-up testing of the board)**
 
   This version of firmware code is configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
@@ -17,7 +19,7 @@ Further details on this code options can be found https://github.com/DitroniX/IP
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
 
-  CALIBRATION (This should be minimal - based on the below)
+  **CALIBRATION (This should be minimal - based on the below)**
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
@@ -25,9 +27,9 @@ Further details on this code options can be found https://github.com/DitroniX/IP
   * You can update calibration in IPEM_Hardware.h
   * You can update board ATM Configurations in ATM90E3x.h
 
-  Enjoy!  Dave Williams
+  *Enjoy!  Dave Williams*
 
-  Remember!
+  **Remember!**
   * Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
   * You may set the BAUD rate to 921600 to speed up flashing.
   * The SDK does NOT need external power to flash.  It will take Power from the USB 5V.
