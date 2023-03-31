@@ -2,7 +2,7 @@
 
 ------------
 
-**This is a NEW board which has now completed Beta testing, final minor improvemnts added and is in production**
+**This is a NEW board, which is in production - Due in by end March 23**
 
 **IPEM Production - 3D Render**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/03/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2302.201P-3D-Model-v2-1024x708.png?raw=true)
@@ -33,7 +33,7 @@ board variants will have FOUR CT inputs.
 
 **IPEM 'Production PCB**
 
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-ATM90E36-IoT-Power-Energy-Monitor-Board-Connections-1-scaled.jpg?raw=true)
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/03/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2303.202P-Component-Placement.png?raw=true)
 
 **ATM90E32**
 
