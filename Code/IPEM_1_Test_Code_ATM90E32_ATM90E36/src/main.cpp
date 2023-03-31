@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 22nd March 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 31st March 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -16,7 +16,7 @@
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
   * CT4 Input Enabled (CT4_ENABLED true)
-  * Multi-Voltage Input (ATM_SINGLEVOLTAGE false)
+  * Multi-Voltage Input (ATM_SINGLEVOLTAGE true)
   * Split-Phase USA Disabled (ATM_SPLITPHASE false)
   * Hardware Test Enabled (DisableHardwareTest false)
   * Display of Board Configuration (EnableDisplayBoardConfiguration true)
@@ -92,13 +92,13 @@ void DisplayRegisters(boolean DisplayFull = true)
   if (DisplayFull == true) // Display Expanded Information
   {
 // Calculate Voltage
-#if ATM_SINGLEVOLTAGE == true && ATM_SINGLEVOLTAGE == true
+#if ATM_SINGLEVOLTAGE == true && ATM_SPLITPHASE == true
     Serial.println("* SOFTWARE CONFIGURATION ERROR *\n* You cannot have ATM_SINGLEVOLTAGE and ATM_SPLITPHASE, both Enabled.\n");
 #else
 #if ATM_SPLITPHASE == true
-    LineVoltageTotal = LineVoltage1 + LineVoltage3; // Split Single Phase configured, so only 120V per leg
+    LineVoltageTotal = (LineVoltage1 + LineVoltage3) / 2; // Split Single Phase configured, so only 120V per leg
 #else
-    LineVoltageAverage = (LineVoltage1 + LineVoltage2 + LineVoltage3) / 3; // Voltage should be 110V, or 220-240, at the AC transformer
+    LineVoltageAverage = (LineVoltage1 + LineVoltage2 + LineVoltage3) / 3; // Voltage should be 110V, or 220-240, at the AC transformer primary.
 #endif
 #endif
 

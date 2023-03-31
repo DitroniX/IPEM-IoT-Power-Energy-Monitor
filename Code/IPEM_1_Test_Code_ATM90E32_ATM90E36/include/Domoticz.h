@@ -18,19 +18,21 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // WiFi.  Setup with your Wireless Information
-const char *ssid = "xxxx";       // network SSID - Case Sensitive
-const char *password = "xxxx";   // network password - Case Sensitive
+const char *ssid = "xxxx";       // WiFi Network SSID - Case Sensitive
+const char *password = "xxxx";   // WiFi Network password - Case Sensitive
 WiFiClient client;               // Initialize the client library
 String HostNameHeader = "IPEM-"; // Hostname Prefix
 
 // Domoticz Server info.  Setup with your Domoticz IP and Port
-const char *domoticz_server = "0.0.0.0"; // IP Address
-int port = 8080;                         // Domoticz port
+const char *domoticz_server = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
+int port = 8080;                         // Domoticz Network Port (Default)
 boolean EnableDomoticz = false;          // Change to true to enable read Loop and sending data to Domoticz.
 
 // NTP Time
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
+
+// Domoticz Hardware Device Indexes
 
 // Set these values to the Domoticz Devices Indexes (IDX).  If Zero, then entry is ignored. Device needs to be created in Domoticz.
 int idxLineVoltage1 = 0;       // LineVoltage1 - Urms - Line 1 Voltage RMS

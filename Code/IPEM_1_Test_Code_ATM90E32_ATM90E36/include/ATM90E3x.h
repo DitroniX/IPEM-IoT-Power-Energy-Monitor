@@ -38,7 +38,7 @@
 #define CT4_ENABLED true   // CT4 ESP32 Clamp (Default true)
 
 // **************** DEFINE VOLTAGE REFERENCE ****************
-#define ATM_SINGLEVOLTAGE false // Set to true to use V1 for CT1, CT2, CT3, CT4, CTN.  (Default false)
+#define ATM_SINGLEVOLTAGE true // Set to true to use V1 for CT1, CT2, CT3, CT4, CTN.  (Default false)
 
 // **************** DEFINE PHASE TYPE ****************
 #define ATM_SPLITPHASE false // If Split Phase (i.e. USA 120+120), set to true else leave false (NB. Not fully tested)

@@ -1,4 +1,7 @@
-DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code
+Std Prod PCA Bring Up.  Jumpers set.  AC In. Load.  Full diags.
+==============================================================
+
+DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Develoopment Code
 
 Domoticz Publishing Disabled
 EEPROM Check: 20        Validation OK
@@ -15,95 +18,92 @@ IPEM Hardware Setup and Power-Up Test - Board Initialized
 
 Register Status and Diagnostic Report
 IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
-ESP32 Serial ID = 103B1A8D3A08   Firmware Version = 230318
+ESP32 Serial ID = AC87938D3A08   Firmware Version = 230331
 
 Hardware Configuration for ATM90E32
 
-AC Voltage Inputs:      Multi Separated V1 V2 V3 - 3 Phase, or 3 x Single Phase Configuration.
+AC Voltage Inputs:      Single Input V1 will be used for all Current Phase Calculations
 Split AC Voltage:       Dual Split-Phase (V1-x-V3) Disabled
-CT Current Clamps:      Configured for 1, 2, 3 Phase + 1 Phase (ESP32)
+CT Current Clamps:      Configured for 1, 2, 3 Phase + 1 Phase (ESP32)   
 CT4 Current Input:      Configured for ESP32 ADC
 
 [Status Values]
-System Status:          S0:0x37E                S1:0x80DC
-Meter Status:           E0:0x200                E1:0x11
+System Status:          S0:0x370                S1:0xFF00
+Meter Status:           E0:0x200                E1:0x3300
 
 Mains RMS Voltage
-─────────────────
-Voltage 1: 244.31 V
-Voltage 2: 244.73 V
-Voltage 3: 244.18 V
-- - - - - - - - - - - - - - - - - -
-Average Voltage: 244.41 V (V1~V2~V3)
+-----------------
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Voltage 1: 246.60 V (Single Line Voltage Selected)
 
 Mains RMS Current
-─────────────────
-Current CT1: 5.60 A
-Current CT2: 0.63 A
-Current CT3: 0.63 A
-Current CT4: 0.30 A (ESP)
+-----------------
+Current CT1: 1.29 A
+Current CT2: 1.28 A
+Current CT3: 1.29 A
+Current CT4: 0.31 A (ESP)
 - - - - - - - - - - - - - - - - - - - - - - -
-Actual Total Current: 7.16 A (CT1~CT2~CT3~CT4)
+Actual Total Current: 4.17 A (CT1~CT2~CT3~CT4)
 
 Calculated RMS Power
 
-Power V1*I1: 1368.14 W
-Power V2*I2: 154.18 W
-Power V3*I3: 153.83 W
-Power V1*I4: 73.29 W
-- - - - - - - - - - - - - - - - - - - - - - - - - 
-Calculated Total Power: 1749.44 W (CT1~CT2~CT3~CT4)
+Power V1*I1: 318.11 W
+Power V1*I2: 315.65 W
+Power V1*I3: 318.11 W
+Power V1*I4: 76.45 W
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Power: 394.56 W (CT1~CT2~CT3~CT4)
 
 Active Power (Absorbed or Used by the Load)
-─────────────────
-Active Power CT1: 1363.10 W     (Import)
-Active Power CT2: 153.08 W      (Import)
-Active Power CT3: -153.86 W     (Export)
+-----------------
+Active Power CT1: 317.00 W      (Import)
+Active Power CT2: 0.00 W 
+Active Power CT3: 0.00 W
 - - - - - - - - - - - - - - - - - - -
-Total Active Power: 1209.32 W   (Import)
+Total Active Power: 317.00 W    (Import)
 
 Re-Active Power
-───────────────
-ReActive Power CT1: 64.23 VAR
-ReActive Power CT2: 6.94 VAR
-ReActive Power CT3: -7.71 VAR
+---------------
+ReActive Power CT1: 19.99 VAR
+ReActive Power CT2: 0.00 VAR
+ReActive Power CT3: 0.00 VAR
 - - - - - - - - - - - - - - - - - - - - - -
-Total ReActive Power: 56.56 VAR (CT1~CT2~CT3)
+Total ReActive Power: 19.99 VAR (CT1~CT2~CT3)
 
 Apparent Power (Total Amount of Power Flowing from Source to Load)
-──────────────────────────────────────────────────────────────────
-Apparent Power CT1: 1366.56 VA
-Apparent Power CT2: 153.43 VA
-Apparent Power CT3: 154.46 VA
-- - - - - - - - - - - - - - - - - - - - - - -
-Total Apparent Power: 1521.36 VA (CT1~CT2~CT3)
+------------------------------------------------------------------
+Apparent Power CT1: 317.94 VA
+Apparent Power CT2: 0.00 VA
+Apparent Power CT3: 0.00 VA
+- - - - - - - - - - - - - - - - - - - - - - 
+Total Apparent Power: 317.84 VA (CT1~CT2~CT3)
 
 Other Power Information
 
-Total Fundamental Power: 1207.86 pH(t)
+Total Fundamental Power: 316.69 pH(t)
 
-Total Harmonic Power: 1.78
+Total Harmonic Power: 0.44
 
 Power Factor
-─────────────
+-------------
 Power Factor CT1: 1.00 PF
-Power Factor CT2: 1.00 PF
+Power Factor CT2: 0.00 PF
 Power Factor CT3: 0.00 PF
 - - - - - - - - - - - - -
-Total Power Factor: 0.80 PF
+Total Power Factor: 1.00 PF
 
 Phase Angle
-───────────
-Phase Angle CT1: 2.70
-Phase Angle CT2: 2.60
+-----------
+Phase Angle CT1: 3.50
+Phase Angle CT2: 0.00
 Phase Angle CT3: 0.00
 
 Other Information
-────────────────
-Chip Temp: 31.00 °C
+----------------
+Chip Temp: 25.00 °C
 
-Frequency: 50.10 Hz
+Frequency: 50.00 Hz
 
-PCB Temperature Sensor (NTC_IN VN):     28.80 ºC
+PCB Temperature Sensor (NTC_IN VN):     24.07 ºC
 
-ADC Raw: 2686 > ADC Adjusted: 2686 > Calculated: 25.58 V
+ADC Raw: 2753 > ADC Adjusted: 2753 > Calculated: 26.22 V
