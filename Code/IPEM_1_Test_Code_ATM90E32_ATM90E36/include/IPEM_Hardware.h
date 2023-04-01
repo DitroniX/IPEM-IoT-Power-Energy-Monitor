@@ -21,7 +21,7 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230331";
+String AppVersion = "230401";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // Variables
@@ -77,6 +77,8 @@ float EmonThreshold = 0.2; // Used to squelch low values. Default 0.2
 
 #if ATM90DEVICE == ATM90E32_DEVICE
 
+// The below related to calibration of Voltage inputs (V1, V2 and V3), also Current Clamp inputs (CT1, CT2 and CT3 only).
+
 // Mains Frequency
 unsigned short LineFreq = 389; // MMode0 0x33 _lineFreq | Default 389
 
@@ -105,6 +107,8 @@ unsigned short CurrentGainCT3 = 38500; // IgainA 0x62	| CT100/50 Mid Range 38500
 #endif
 
 #if ATM90DEVICE == ATM90E36_DEVICE
+
+// The below related to calibration of Voltage inputs (V1, V2 and V3), also Current Clamp inputs (CT1, CT2 and CT3 only).
 
 // Mains Frequency
 unsigned short LineFreq = 389; // MMode0 0x33 _lineFreq | 389
@@ -146,10 +150,10 @@ unsigned short CurrentGainCTN = 33500; // IgainA 0x6E
 
 #endif
 
-// **************** Initialize ATM IC class ****************
+// **************** Initialize ATM90E32 or ATM90E36 IC Class ****************
 ATM90E3x eic{}; //
 
-// **************** INPUTS ****************
+// **************** ESP32 INPUTS ****************
 #define ATM_WO 25      // GPIO 25 (DAC1 ADC2_CH8)
 #define ATM_CF1 27     // GPIO 27 (Digital ADC 2 CH7)
 #define ATM_CF2 32     // GPIO 32 (Digital ADC 1 CH4)
@@ -162,13 +166,13 @@ ATM90E3x eic{}; //
 #define NTC_IN 39      // GPIO 39/VN (Analog ADC 1 CH3)
 #define User_Button 26 // GPIO 26 (DAC2 ADC2_CH9)
 
-// **************** OUTPUTS ****************
+// **************** ESP32 OUTPUTS ****************
 #define GP12_DMA_CTRL 12 // GP12 and Auto DMA Control (MUST be LOW on ESP32 Boot)
 #define LED_Red 2        // Red LED
 #define LED_Green 4      // Green LED
 #define LED_Blue 15      // Blue LED
 
-// **************** GPIO or UART2 ****************
+// **************** ESP32 GPIO or UART2 ****************
 #define USR_GP16_RX 16 // GPIO 16 (Digital TTL_RXD)
 #define USR_GP17_TX 17 // GPIO 17 (Digital TTL_TXD)
 
@@ -176,11 +180,13 @@ ATM90E3x eic{}; //
 #define I2C_SDA 21
 #define I2C_SCL 22
 
-// References for SPI Expansion Port
-// CS = 5
-// MISO = 19
-// MOSI = 23
-// SCK = 18
+/*
+  References to ESP32 SPI Expansion Port to ATM90E3x
+  * CS = 5
+  * MISO = 19
+  * MOSI = 23
+  * SCK = 18
+ */
 
 // **************** FUNCTIONS AND ROUTINES ****************
 
