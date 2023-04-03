@@ -1,8 +1,11 @@
 **IPEM ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitor SDK**
 
-------------
+The IPEM Kit
 
-**This is a NEW board, which is in production - Due in by end March 23**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-ATM90E36-Variant-SDK-1.2303.202P-Kit-scaled.jpg?raw=true)
+
+
+------------
 
 **IPEM Production - 3D Render**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/03/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2302.201P-3D-Model-v2-1024x708.png?raw=true)
@@ -27,7 +30,7 @@ board variants will have FOUR CT inputs.
 - **ATM90E36**
  - 3 x CT Line inputs to the ATM chip.
  - 1 x CT N input to the ATM chip or CT to ESP32 ADC
- - Optional 1 x CT input to the ESP32 ADC.
+ - Alternative 1 x CT input to the ESP32 ADC.
 
 ------------
 
