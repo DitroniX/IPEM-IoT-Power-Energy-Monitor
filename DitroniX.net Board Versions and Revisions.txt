@@ -1,10 +1,14 @@
 
-For various reasons, our boards may require update.  The below list contains any revision information summary.
+For various production reasons and component availability, our boards may require update.  The below list contains any revision information summary.
 
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor Board SDK
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+N 3+1 CT-Clamps Current Voltage Frequency 
 
+*Production*
+1.2304-203  Exactly the same as 1.2303-202 but has BOM specific updates for the ESP32E ATM90E32 AP63203 Variant for production.
 1.2303-202	Final Production Release, same as 1.2302-201 but has reverted back to a CH340C and has an additional GP0/GP26 Link.
+
+*Pre-Production*
 1.2303-201	Pre-Production Release, same as 1.2302-201 but has schematic text changes so both variants option CT4 with ESP32 ADC
 1.2302-201	Pre-Production Release.  Last minuted change from CH340C to CH340E due to supply issues.
 1.2302-101	Beta Release
