@@ -17,3 +17,13 @@ The 12V Output setting performs the best and IPEM ATM90E26 VP Input has been des
 
 Note: IPEM AP SMPS Regulator Input Voltage, Absolute Max: 32 V DC
 
+Further information can be found:
+
+- **Website** https://ditronix.net/
+- **WIKI**  https://ditronix.net/wiki/
+- **GitHub**  https://github.com/DitroniX/
+- **Shop**  https://ditronix.net/shop/
+- **Hackster.io** https://www.hackster.io/ditronix
+
+Dave Williams | G8PUO | DitroniX 1981-2023 | ditronix.net
+
