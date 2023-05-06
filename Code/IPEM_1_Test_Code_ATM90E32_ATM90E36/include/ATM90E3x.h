@@ -34,7 +34,7 @@
 #define CT4_ESP 32 // ESP32 ADC.  Suitable for both ATM90E32 or ATM90E36
 
 // CT4 Software Configuration
-#define CT4_ISOLATED true  // Top Level CT4 Clamp Total Isolation from All Formulas (Default false, so can be used for CT4_ATM or CT4_ESP)
+#define CT4_ISOLATED false  // Top Level CT4 Clamp Total Isolation from All Formulas (Default false, so can be used for CT4_ATM or CT4_ESP)
 #define CT4_CONFIG CT4_ESP // On IPEM, Set CT4 ADC Configuration.  CT4_ATM or CT4_ESP
 #define CT4_ENABLED true   // CT4 ESP32 Clamp (Default true)
 
