@@ -21,7 +21,7 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230401";
+String AppVersion = "230505";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // Variables
@@ -90,8 +90,10 @@ unsigned short PGAGain = 0b0101010101111111; // PMPGA 0x17  | DPGA Gain = 2 and 
 // This is calculated based on the Bell Transformer DAT01 on 12V setting @ ~19V RMS.  Need to allow for +/- ~ 1% Tolerance.
 // Calculations: Base value for 240V is 38800.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
 // Calculations: Base value for 120V is 20200.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
-#if ATM_SINGLEVOLTAGE == true
+#if ATM_SINGLEVOLTAGE == true 
 unsigned short VoltageGain1 = 38800; // uGain = UgainA | 0x61	0x0002 40500 20000 42620 (10000 = ~60V)
+unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
+unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
 #else
 unsigned short VoltageGain1 = 38800; // uGain = UgainA | 38800 Default Starting Value
 unsigned short VoltageGain2 = 38800; // uGain = UgainB | 38800 Default Starting Value
@@ -123,6 +125,8 @@ unsigned short PGAGain = 0b0101010101010101; // PMPGA 0x17  | DPGA Gain = 2 and 
 // Calculations: Base value for 120V is 9700.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
 #if ATM_SINGLEVOLTAGE == true
 unsigned short VoltageGain1 = 20200; // uGain = UgainA | 20200 Default Starting Value
+unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
+unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3. 
 #else
 unsigned short VoltageGain1 = 20200; // uGain = UgainA | 20200 Default Starting Value
 unsigned short VoltageGain2 = 20200; // uGain = UgainB | 20200 Default Starting Value
@@ -361,13 +365,17 @@ void DisplayBoardConfiguration()
 #endif
 
 #if ATM_SINGLEVOLTAGE == true
-  Serial.println("AC Voltage Inputs:\tSingle Input V1 will be used for all Current Phase Calculations");
+  Serial.println("AC Voltage Inputs:\tSingle Input V1 will be used for Current Phase Calculations");
 #else
 #if ATM_SPLITPHASE == false // World Single, Three Phase or 3 x Single Phases
   Serial.println("AC Voltage Inputs:\tMulti Separated V1 V2 V3 - 3 Phase, or 3 x Single Phase Configuration.");
 #else                       // USA Split Phase 120+120
   Serial.println("AC Voltage Inputs:\tMulti Dual V1 and V3 - USA Configuration");
 #endif
+#endif
+
+#if CT4_ISOLATED == true
+  Serial.println("CT4 ISOLATED!.  CT4 Input is Full Isolated and will not be included in Current Calculations");
 #endif
 
 #if ATM_SPLITPHASE == true
@@ -387,21 +395,29 @@ void DisplayBoardConfiguration()
 #endif
 #else
   // World
-#if CT4_CONFIG == CT4_ESP && ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP
+#if CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false && ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false
   Serial.println("Split AC Voltage:\tDual Split-Phase (V1-x-V3) Disabled");
   Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase + 1 Phase (ESP32)");
 #else
   Serial.println("Split AC Voltage:\tDual  or Split Voltage Input Disabled");
+
+#if CT4_ISOLATED == false
   Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase + 1 Phase (I4N)");
+#else
+  Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase");
 #endif
 
 #endif
 
-#if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE && CT4_CONFIG == CT4_ESP
+#endif
+
+#if CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false || ATM90DEVICE == ATM90E32_DEVICE && CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false
   Serial.println("CT4 Current Input:\tConfigured for ESP32 ADC");
 #else
+#if CT4_ISOLATED == false
   Serial.print("CT4 Current Input:\tConfigured for I4N on the ATM90E");
   Serial.println(ATM90DEVICE);
+#endif
 #endif
 
   Serial.println("");

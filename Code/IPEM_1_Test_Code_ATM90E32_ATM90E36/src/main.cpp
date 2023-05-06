@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 1st April 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 5th May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -16,12 +16,13 @@
   This version of firmware code is configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
-  * CT4 Input Enabled (CT4_ENABLED true)
+  * CT4 Input - Enabled (CT4_ENABLED true)
+  * CT4 Isolated from all Formulas - Disabled (CT4_ISOLATED false)
   * Multi-Voltage Input (ATM_SINGLEVOLTAGE true)
-  * Split-Phase USA Disabled (ATM_SPLITPHASE false)
-  * Hardware Test Enabled (DisableHardwareTest false)
+  * Split-Phase USA - Disabled (ATM_SPLITPHASE false)
+  * Hardware Test - Enabled (DisableHardwareTest false)
   * Display of Board Configuration (EnableDisplayBoardConfiguration true)
-  * Domoticz Publishing Disabled (EnableDomoticz false)
+  * Domoticz Publishing - Disabled (EnableDomoticz false)
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
@@ -29,7 +30,7 @@
   CALIBRATION (This should be minimal - based on the below)
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
-  * Current Clamp default example settings are based on SCT-013-000 100A/50mA.  
+  * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
   * Voltages default example settings are based on Single/Three Phase Voltage Inputs from a Greenbrook DAT01A (TC TR7) Transformer, set to 12V AC.
   * Current Clamps CT1, CT2 and CT3 are connected to the ATM90E3x. Calibration requirements should be minimal and board ready to use.
   * AC Voltage Inputs V1, V2 and V3 are connected to the ATM90E3x. Calibration requirements should be minimal and board ready to use.
@@ -135,17 +136,18 @@ void DisplayRegisters(boolean DisplayFull = true)
 
   // Get Total Current.  Ignore CT2 if Split Phase
   LineCurrentCT1 = NoiseFilterSquelch(eic.GetLineCurrentCT1());
-#if ATM_SPLITPHASE == falseelse
+#if ATM_SPLITPHASE == false
   LineCurrentCT2 = NoiseFilterSquelch(eic.GetLineCurrentCT2());
 #else
   LineCurrentCT2 = 0;
 #endif
   LineCurrentCT3 = NoiseFilterSquelch(eic.GetLineCurrentCT3());
 
-// Using ESP32 ADC for CT4 Current Input
+  // Using ESP32 ADC for CT4 Current Input
+
 #if ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP
   ReadCT4Current();
-#if CT4_ENABLED == true
+#if CT4_ENABLED == true && CT4_ISOLATED == false
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3 + LineCurrentCT4);
 #else
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3);
@@ -153,7 +155,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 #endif
 
 // E36 Using I4N Input for Current
-#if ATM90DEVICE == ATM90E36_DEVICE && CT4_CONFIG == CT4_ATM
+#if ATM90DEVICE == ATM90E36_DEVICE && CT4_CONFIG == CT4_ATM && CT4_ISOLATED == false
   LineCurrentCTN = NoiseFilterSquelch(eic.GetLineCurrentCTN());
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3);
 #endif
@@ -172,7 +174,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 
     Serial.println("Current CT3: " + String(LineCurrentCT3) + " A");
 
-#if ATM90DEVICE == ATM90E32_DEVICE && CT4_ENABLED == true || CT4_CONFIG == CT4_ESP && CT4_ENABLED == true
+#if ATM90DEVICE == ATM90E32_DEVICE && CT4_ENABLED == true && CT4_ISOLATED == false || CT4_CONFIG == CT4_ESP && CT4_ENABLED == true && CT4_ISOLATED == false
     Serial.println("Current CT4: " + String(LineCurrentCT4) + " A (ESP ADC1 CH7)");
 #endif
 
@@ -183,7 +185,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 #if ATM_SPLITPHASE == true
     Serial.println("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~X~CT3)");
 #else
-#if CT4_ENABLED == true
+#if CT4_ENABLED == true && CT4_ISOLATED == false
     PrintSeparator("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~CT2~CT3~CT4)");
 #else
     PrintSeparator("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~CT2~CT3)");
@@ -200,28 +202,40 @@ void DisplayRegisters(boolean DisplayFull = true)
   CalculatedPowerCT1 = LineVoltage1 * LineCurrentCT1;
   CalculatedPowerCT2 = LineVoltage1 * LineCurrentCT2;
   CalculatedPowerCT3 = LineVoltage1 * LineCurrentCT3;
+
+#if CT4_ISOLATED == false
   CalculatedPowerCT4 = LineVoltage1 * LineCurrentCT4;
+#endif
+
   if (DisplayFull == true) // Display Expanded Information
   {
     PrintUnderline("Calculated RMS Power");
     Serial.println("Power V1*I1: " + String(CalculatedPowerCT1) + " W");
     Serial.println("Power V1*I2: " + String(CalculatedPowerCT2) + " W");
     Serial.println("Power V1*I3: " + String(CalculatedPowerCT3) + " W");
+
+#if CT4_ISOLATED == false
     Serial.println("Power V1*I4: " + String(CalculatedPowerCT4) + " W");
+
+#endif
   }
 #else // Seperate Mains Voltages for Current Measurements
   CalculatedPowerCT1 = LineVoltage1 * LineCurrentCT1;
   CalculatedPowerCT2 = LineVoltage2 * LineCurrentCT2;
   CalculatedPowerCT3 = LineVoltage3 * LineCurrentCT3;
+
+#if CT4_ISOLATED == false
   CalculatedPowerCT4 = LineVoltage1 * LineCurrentCT4; // ESP32 ADC1 CH7 using V1
-  if (DisplayFull == true)                            // Display Expanded Information
+#endif
+
+  if (DisplayFull == true) // Display Expanded Information
   {
     PrintUnderline("Calculated RMS Power");
     Serial.println("Power V1*I1: " + String(CalculatedPowerCT1) + " W");
     Serial.println("Power V2*I2: " + String(CalculatedPowerCT2) + " W");
     Serial.println("Power V3*I3: " + String(CalculatedPowerCT3) + " W");
   }
-#if CT4_ENABLED == true
+#if CT4_ENABLED == true && CT4_ISOLATED == false
   if (DisplayFull == true) // Display Expanded Information
   {
     Serial.println("Power V1*I4: " + String(CalculatedPowerCT4) + " W");
@@ -236,7 +250,7 @@ void DisplayRegisters(boolean DisplayFull = true)
     CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage3 * LineCurrentCT3);
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~X~CT3)");
 #else // World
-#if CT4_CONFIG == CT4_ESP && CT4_ENABLED == true
+#if CT4_CONFIG == CT4_ESP && CT4_ENABLED == true && CT4_ISOLATED == false
     CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3) + (LineVoltage1 * LineCurrentCT4);
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~CT2~CT3~CT4)");
 #else
@@ -499,19 +513,19 @@ void setup()
   // ****************  Initialise the ATM90E3x & Pass related calibrations to its library ****************
 
 // LineFreq = lineFreq, PGAGain = pgagain, VoltageGainX = ugain, CurrentGainCT1 = igainA, CurrentGainCT2 = igainB, CurrentGainCT3 = igainC, CurrentGainCTN = igainN
-#if ATM90DEVICE == ATM90E32_DEVICE && ATM_SPLITPHASE == true // ???
+#if ATM90DEVICE == ATM90E32_DEVICE && ATM_SPLITPHASE == true // Not Fully Tested.
 // the 2nd (B) current channel is not used with the split phase meter
 #if ATM_SINGLEVOLTAGE == true
   eic.begin(LineFreq, PGAGain, VoltageGain1, 0, 0, CurrentGainCT1, 0, CurrentGainCT2);
 #else
   eic.begin(LineFreq, PGAGain, VoltageGain1, VoltageGain2, VoltageGain3, CurrentGainCT1, 0, CurrentGainCT2);
 #endif
-
 #endif
 
 #if ATM90DEVICE == ATM90E32_DEVICE && ATM_SPLITPHASE == false
 #if ATM_SINGLEVOLTAGE == true
-  eic.begin(LineFreq, PGAGain, VoltageGain1, 0, 0, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3);
+  // eic.begin(LineFreq, PGAGain, VoltageGain1, 0, 0, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3);
+  eic.begin(LineFreq, PGAGain, VoltageGain1, VoltageGain1, VoltageGain1, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3);
 #else
   eic.begin(LineFreq, PGAGain, VoltageGain1, VoltageGain2, VoltageGain3, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3);
 #endif
@@ -519,7 +533,8 @@ void setup()
 
 #if ATM90DEVICE == ATM90E36_DEVICE && ATM_SPLITPHASE == false
 #if ATM_SINGLEVOLTAGE == true
-  eic.begin(LineFreq, PGAGain, VoltageGain1, 0, 0, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3, CurrentGainCTN);
+  // eic.begin(LineFreq, PGAGain, VoltageGain1, 0, 0, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3, CurrentGainCTN);
+  eic.begin(LineFreq, PGAGain, VoltageGain1, VoltageGain1, VoltageGain1, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3, CurrentGainCTN);
 #else
   eic.begin(LineFreq, PGAGain, VoltageGain1, VoltageGain2, VoltageGain3, CurrentGainCT1, CurrentGainCT2, CurrentGainCT3, CurrentGainCTN);
 #endif

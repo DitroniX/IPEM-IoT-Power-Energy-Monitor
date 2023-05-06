@@ -558,6 +558,8 @@ void ATM90E3x::begin(unsigned short lineFreq, unsigned short pgagain, unsigned s
 
 #if ATM_SINGLEVOLTAGE == true
   _ugain1 = ugain1; // Voltage RMS Gain
+  _ugain2 = ugain1; // Duplicate ugain1 Values to _ugain2 and _ugain3.
+  _ugain3 = ugain1; // Duplicate ugain1 Values to _ugain2 and _ugain3.
 #else
   _ugain1 = ugain1; // Voltage 1 RMS Gain
   _ugain2 = ugain2; // Voltage 2 RMS Gain
