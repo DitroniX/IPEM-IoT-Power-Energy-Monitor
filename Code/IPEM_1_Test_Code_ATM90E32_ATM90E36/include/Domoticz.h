@@ -10,27 +10,12 @@
   Further information, details and examples can be found on our website wiki pages ditronix.net/wiki and also github.com/DitroniX
 */
 
-// Libraries
-#include <WiFi.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
-
-// WiFi.  Setup with your Wireless Information
-const char *ssid = "xxxx";       // WiFi Network SSID - Case Sensitive
-const char *password = "xxxx";   // WiFi Network password - Case Sensitive
-WiFiClient client;               // Initialize the client library
-String HostNameHeader = "IPEM-"; // Hostname Prefix
 
 // Domoticz Server info.  Setup with your Domoticz IP and Port
 const char *domoticz_server = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
 int port = 8080;                         // Domoticz Network Port (Default)
 boolean EnableDomoticz = false;          // Change to true to enable read Loop and sending data to Domoticz.
-
-// NTP Time
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
 
 // Domoticz Hardware Device Indexes
 
@@ -115,48 +100,6 @@ void DomoticzIntegration()
     }
 } // DomoticzIntegration
 
-// Initialise WiFi
-void InitialiseWiFi()
-{
-    // Connect or reconnect to WiFi
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        Serial.println("Attempting to connect to " + String(ssid) + "\n");
-
-        // Force Hostname
-        String Hostname = HostNameHeader;
-        Hostname.concat(WiFi.macAddress().substring(WiFi.macAddress().length() - 5, WiFi.macAddress().length()));
-        Hostname.replace(":", "");
-        WiFi.setHostname(Hostname.c_str());
-
-        // Wifi Initialisation
-        WiFi.begin(ssid, password);
-
-        // Stabalise for slow Access Points
-        delay(2000);
-
-        // Wifi Settings
-        WiFi.mode(WIFI_STA);
-        WiFi.setAutoReconnect(true);
-        WiFi.persistent(true);
-
-        // Stabalise for slow Access Points
-        delay(1000);
-
-        // Wifi Information
-        PrintUnderline("Connection Details:");
-        Serial.println("WiFi SSID \t " + String(ssid) + "(Wifi Station Mode)");
-        Serial.printf("WiFi IP \t %s\n", WiFi.localIP().toString().c_str());
-        Serial.printf("WiFi GW \t %s\n", WiFi.gatewayIP().toString().c_str());
-        Serial.printf("WiFi MASK \t %s\n", WiFi.subnetMask().toString().c_str());
-        Serial.println("WiFi MAC \t " + WiFi.macAddress());
-        Serial.printf("WiFi Hostname \t %s\n", WiFi.getHostname());
-        Serial.println("WiFi RSSI \t " + String(WiFi.RSSI()));
-        Serial.println("");
-
-        timeClient.begin();
-    }
-} // InitialiseWiFi
 
 // Publish to Domoticz - Single Values
 void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = "")

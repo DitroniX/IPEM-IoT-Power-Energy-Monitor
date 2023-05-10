@@ -2,18 +2,18 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 5th May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 10th May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
   Simplified Board Bring Up Test - ATM90E3x Test Routines (Output sent to the Serial Print - ONLY ON BOOT! Press RESET or HOLD USR Button to REFRESH)
 
-  Base register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
-  VSCode base,E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware and Domoticz Integration by Date Williams
+  Base 90E32/36 register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
+  VSCode base,E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, OTA and Domoticz Integration by Date Williams
 
   CONFIGURATION (Setup for bring-up testing of the board)
 
-  This version of firmware code is configured for:
+  This version of firmware code is by default, configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
   * CT4 Input - Enabled (CT4_ENABLED true)
@@ -39,6 +39,19 @@
   * You can update board ATM Configurations in ATM90E3x.h
   * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
 
+  WiFi and OTA Updates
+
+  * Setup WiFi
+  * Setup Optional Static IP address and Gateway (DHCP or Static)
+  * Setup Hostname
+  * Setup Serial Device over IP (Used for OTA)
+
+  DOMOTICZ
+
+  * Setup connection to Domoticz Home Automation
+  * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
+
+
   Enjoy!  Dave Williams, DitroniX.net
 
   Remember!
@@ -62,13 +75,14 @@
 #include <driver/adc.h>
 #include <ATM90E3x.h>
 #include <IPEM_Hardware.h>
+#include <WiFi-OTA.h>
 #include <Domoticz.h>
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // Constants
-const int LoopDelay = 1;                        // Loop Delay in Seconds
-boolean EnableBasicLoop = false;                // Set to true to display loop readings and displaying only one per reset cycle.
+const int LoopDelay = 1;                         // Loop Delay in Seconds
+boolean EnableBasicLoop = false;                 // Set to true to display loop readings and displaying only one per reset cycle.
 boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information
 
 // **************** FUNCTIONS AND ROUTINES ****************
@@ -448,7 +462,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   ChipTemperature = NoiseFilterSquelch(eic.GetTemperature());
   if (DisplayFull == true) // Display Expanded Information
   {
-    Serial.println("Chip Temp: " + String(ChipTemperature) + " °C");
+    Serial.println("Chip Temperature: " + String(ChipTemperature) + " °C");
     Serial.println("");
   }
 
@@ -456,7 +470,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   LineFrequency = NoiseFilterSquelch(eic.GetFrequency());
   if (DisplayFull == true) // Display Expanded Information
   {
-    Serial.println("Frequency: " + String(LineFrequency) + " Hz");
+    Serial.println("Mains Frequency: " + String(LineFrequency) + " Hz");
     Serial.println("");
   }
 
@@ -486,6 +500,10 @@ void setup()
   Serial.println("");
   Serial.println(AppName);
   Serial.println("");
+
+  // Initialise WiFi and OTA
+  InitialiseWiFi();
+  InitialiseOTA();
 
   // Domoticz Integration
   if (EnableDomoticz == true)
@@ -552,6 +570,9 @@ void setup()
 // **************** LOOP ****************
 void loop()
 {
+
+  // Basic Handler for ArduinoOTA
+  CheckOTA();
 
   // Simple test for Loop to bypass EnableBasicLoop if User Button Pressed for ~ 1 Second
   if (EnableBasicLoop == true || digitalRead(User_Button) == LOW)

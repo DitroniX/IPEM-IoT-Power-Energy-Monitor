@@ -6,15 +6,16 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   
   **CONFIGURATION (Setup for bring-up testing of the board)**
 
-  This version of firmware code is configured for:
+  This version of firmware code is by default, configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
-  * CT4 Input Enabled (CT4_ENABLED true)
-  * Multi-Voltage Input (ATM_SINGLEVOLTAGE false)
-  * Split-Phase USA Disabled (ATM_SPLITPHASE false)
-  * Hardware Test Enabled (DisableHardwareTest false)
+  * CT4 Input - Enabled (CT4_ENABLED true)
+  * CT4 Isolated from all Formulas - Disabled (CT4_ISOLATED false)
+  * Multi-Voltage Input (ATM_SINGLEVOLTAGE true)
+  * Split-Phase USA - Disabled (ATM_SPLITPHASE false)
+  * Hardware Test - Enabled (DisableHardwareTest false)
   * Display of Board Configuration (EnableDisplayBoardConfiguration true)
-  * Domoticz Publishing Disabled (EnableDomoticz false)
+  * Domoticz Publishing - Disabled (EnableDomoticz false)
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
@@ -24,8 +25,24 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
   * Voltages default example settings are based on Single/Three Phase Voltage Inputs from a Greenbrook DAT01A (TC TR7) Transformer, set to 12V AC.
-  * You can update calibration in IPEM_Hardware.h
+  * Current Clamps CT1, CT2 and CT3 are connected to the ATM90E3x. Calibration requirements should be minimal and board ready to use.
+  * AC Voltage Inputs V1, V2 and V3 are connected to the ATM90E3x. Calibration requirements should be minimal and board ready to use.
+  * Current Clamp CT4 is connected to the ESP32 ADC1 CH7. Software EmonLib calibratrion may be required.
+  * You can update ATM90Ex calibration (if required), in IPEM_Hardware.h
   * You can update board ATM Configurations in ATM90E3x.h
+  * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
+
+  **WiFi and OTA Updates**
+
+  * Setup WiFi
+  * Setup Optional Static IP address and Gateway (DHCP or Static)
+  * Setup Hostname
+  * Setup Serial Device over IP (Used for OTA)
+
+  **DOMOTICZ**
+
+  * Setup connection to Domoticz Home Automation
+  * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
 
   *Enjoy!  Dave Williams*
 
