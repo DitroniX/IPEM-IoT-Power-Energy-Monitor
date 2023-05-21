@@ -2,14 +2,18 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 10th May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 20th May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
-  Simplified Board Bring Up Test - ATM90E3x Test Routines (Output sent to the Serial Print - ONLY ON BOOT! Press RESET or HOLD USR Button to REFRESH)
+  This software has expanded way past it's original bring-up task and is now quite comprehensive.  It can now be, as is, used for both bring-up, final use and pubishing. Else, simply use the bits you like!
+
+  A number of software switches are used, throughout.  The defalts are listed below.  You shold be able to just compile this current version to an IPEM ATM90E32 and see some valid results in the serial monitor / OLED.
+
+  Board Bring Up Test - ATM90E3x Test Routines (Output sent to the Serial Print - ONLY ON BOOT! Press RESET or HOLD USR Button to REFRESH)
 
   Base 90E32/36 register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
-  VSCode base,E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, OTA and Domoticz Integration by Date Williams
+  VSCode base, E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, Comprehensive Functions, OTA and Domoticz Integration by Date Williams
 
   CONFIGURATION (Setup for bring-up testing of the board)
 
@@ -26,6 +30,7 @@
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
+  * OLED 0.6" Display SSD1306 128x32.  (EnableOLEDLoop true)
 
   CALIBRATION (This should be minimal - based on the below)
 
@@ -45,6 +50,8 @@
   * Setup Optional Static IP address and Gateway (DHCP or Static)
   * Setup Hostname
   * Setup Serial Device over IP (Used for OTA)
+  * Display WiFI Signal Meter
+  * Web Server Informatin Page and Push OTA Updater
 
   DOMOTICZ
 
@@ -81,9 +88,10 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // Constants
-const int LoopDelay = 1;                         // Loop Delay in Seconds
-boolean EnableBasicLoop = false;                 // Set to true to display loop readings and displaying only one per reset cycle.
-boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information
+const int LoopDelay = 1;                         // Loop Delay in Seconds.  Default 1.
+boolean EnableBasicLoop = false;                 // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
+boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information. Default true.
+boolean EnableOLEDLoop = true;                   // Set to true to enable OLED Display.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
 
 // **************** FUNCTIONS AND ROUTINES ****************
 
@@ -92,13 +100,11 @@ void DisplayRegisters(boolean DisplayFull = true)
 {
 
   if (DisplayFull == false) // Display Expanded Information
-  {
-    Serial.println("\nDisplay Output Set to Minimised");
-  }
+                            // Serial.println("\nDisplay Output (DisplayRegisters false), Set to Minimised");
 
-  // Display Board Configuration
-  if (EnableDisplayBoardConfiguration == true && DisplayFull == true)
-    DisplayBoardConfiguration();
+    // Display Board Configuration
+    if (EnableDisplayBoardConfiguration == true)
+      DisplayBoardConfiguration();
 
   // **************** VOLTAGE ****************
 
@@ -109,18 +115,19 @@ void DisplayRegisters(boolean DisplayFull = true)
   LineVoltageAverage = 0;
   LineVoltageTotal = 0;
 
-  if (DisplayFull == true) // Display Expanded Information
-  {
 // Calculate Voltage
 #if ATM_SINGLEVOLTAGE == true && ATM_SPLITPHASE == true
-    Serial.println("* SOFTWARE CONFIGURATION ERROR *\n* You cannot have ATM_SINGLEVOLTAGE and ATM_SPLITPHASE, both Enabled.\n");
+  Serial.println("* SOFTWARE CONFIGURATION ERROR *\n* You cannot have ATM_SINGLEVOLTAGE and ATM_SPLITPHASE, both Enabled.\n");
 #else
 #if ATM_SPLITPHASE == true
-    LineVoltageTotal = (LineVoltage1 + LineVoltage3) / 2; // Split Single Phase configured, so only 120V per leg
+  LineVoltageTotal = (LineVoltage1 + LineVoltage3) / 2; // Split Single Phase configured, so only 120V per leg
 #else
-    LineVoltageAverage = (LineVoltage1 + LineVoltage2 + LineVoltage3) / 3; // Voltage should be 110V, or 220-240, at the AC transformer primary.
+  LineVoltageAverage = (LineVoltage1 + LineVoltage2 + LineVoltage3) / 3; // Voltage should be around 110V, or 220-240, at the AC transformer primary.
 #endif
 #endif
+
+  if (DisplayFull == true) // Display Expanded Information
+  {
 
     // Mains RMS Voltage
     PrintUnderline("Mains RMS Voltage");
@@ -257,31 +264,36 @@ void DisplayRegisters(boolean DisplayFull = true)
 #endif
 #endif
 
-  if (DisplayFull == true) // Display Expanded Information
-  {
 // Calculate Total Watts
 #if ATM_SPLITPHASE == true // USA 120+120
-    CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage3 * LineCurrentCT3);
+  CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage3 * LineCurrentCT3);
+
+  if (DisplayFull == true) // Display Expanded Information
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~X~CT3)");
 #else // World
 #if CT4_CONFIG == CT4_ESP && CT4_ENABLED == true && CT4_ISOLATED == false
-    CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3) + (LineVoltage1 * LineCurrentCT4);
+  CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3) + (LineVoltage1 * LineCurrentCT4);
+
+  if (DisplayFull == true) // Display Expanded Information
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~CT2~CT3~CT4)");
 #else
-    CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3);
+  CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3);
+
+  if (DisplayFull == true) // Display Expanded Information
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~CT2~CT3)");
 #endif
 #endif
 
+  if (DisplayFull == true) // Display Expanded Information
     Serial.println("");
-  }
+
   // Active Power.  Extra Import/Export values included to provide added detail for Home Automation logging
   String ActiveFlag = "";
+
   if (DisplayFull == true) // Display Expanded Information
-  {
     PrintUnderline("Active Power (Absorbed or Used by the Load)");
-  }
-  // Active Power CT1
+
+  // Active Power CT1 - Always a Postive Number
   ActivePowerCT1 = NoiseFilterSquelch(eic.GetActivePowerCT1(), 0.2);
   ActivePowerImportCT1 = 0;
   ActivePowerExportCT1 = 0;
@@ -298,12 +310,11 @@ void DisplayRegisters(boolean DisplayFull = true)
     ActivePowerExportCT1 = -ActivePowerCT1;
     ActiveFlag = "(Export)";
   }
-  if (DisplayFull == true) // Display Expanded Information
-  {
-    Serial.println("Active Power CT1: " + String(ActivePowerCT1) + " W \t" + ActiveFlag);
-  }
 
-  // Active Power CT2
+  if (DisplayFull == true) // Display Expanded Information
+    Serial.println("Active Power CT1: " + String(ActivePowerCT1) + " W \t" + ActiveFlag);
+
+  // Active Power CT2 - Always a Postive Number
   ActivePowerCT2 = NoiseFilterSquelch(eic.GetActivePowerCT2(), 0.2);
   ActivePowerImportCT2 = 0;
   ActivePowerExportCT2 = 0;
@@ -321,11 +332,9 @@ void DisplayRegisters(boolean DisplayFull = true)
     ActiveFlag = "(Export)";
   }
   if (DisplayFull == true) // Display Expanded Information
-  {
     Serial.println("Active Power CT2: " + String(ActivePowerCT2) + " W \t" + ActiveFlag);
-  }
 
-  // Active Power CT3
+  // Active Power CT3 - Always a Postive Number
   ActivePowerCT3 = NoiseFilterSquelch(eic.GetActivePowerCT3(), 0.2);
   ActivePowerImportCT3 = 0;
   ActivePowerExportCT3 = 0;
@@ -342,10 +351,9 @@ void DisplayRegisters(boolean DisplayFull = true)
     ActivePowerExportCT3 = -ActivePowerCT3;
     ActiveFlag = "(Export)";
   }
+
   if (DisplayFull == true) // Display Expanded Information
-  {
     Serial.println("Active Power CT3: " + String(ActivePowerCT3) + " W \t" + ActiveFlag);
-  }
 
   // Total Active Power
   TotalActivePower = NoiseFilterSquelch(eic.GetTotalActivePower(), 0.2);
@@ -362,9 +370,13 @@ void DisplayRegisters(boolean DisplayFull = true)
     TotalActivePowerExport = -TotalActivePower;
     ActiveFlag = "(Export)";
   }
+
+  CalculatedTotalActivePower = (ActivePowerCT1 + ActivePowerCT2 + ActivePowerCT3);
+
   if (DisplayFull == true) // Display Expanded Information
   {
     PrintSeparator("Total Active Power: " + String(TotalActivePower) + " W \t" + ActiveFlag);
+    PrintSeparator("Calculated Total Active Power: " + String(CalculatedTotalActivePower) + " W (CT1~CT2~CT3)");
     Serial.println("");
   }
 
@@ -373,6 +385,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   ReactivePowerCT2 = NoiseFilterSquelch(eic.GetReactivePowerCT2());
   ReactivePowerCT3 = NoiseFilterSquelch(eic.GetReactivePowerCT3());
   TotalReactivePower = NoiseFilterSquelch(eic.GetTotalReactivePower());
+  CalculatedTotalReactivePower = (ReactivePowerCT1 + ReactivePowerCT2 + ReactivePowerCT3);
 
   if (DisplayFull == true) // Display Expanded Information
   {
@@ -381,6 +394,9 @@ void DisplayRegisters(boolean DisplayFull = true)
     Serial.println("ReActive Power CT2: " + String(ReactivePowerCT2) + " VAR");
     Serial.println("ReActive Power CT3: " + String(ReactivePowerCT3) + " VAR");
     PrintSeparator("Total ReActive Power: " + String(TotalReactivePower) + " VAR (CT1~CT2~CT3)");
+
+    PrintSeparator("Calculated Total Reactive Power: " + String(CalculatedTotalReactivePower) + " W (CT1~CT2~CT3)");
+
     Serial.println("");
   }
 
@@ -389,6 +405,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   ApparentPowerCT2 = NoiseFilterSquelch(eic.GetApparentPowerCT2());
   ApparentPowerCT3 = NoiseFilterSquelch(eic.GetApparentPowerCT3());
   TotalApparentPower = NoiseFilterSquelch(eic.GetTotalApparentPower());
+  CalculatedTotalApparentPower = (ApparentPowerCT1 + ApparentPowerCT2 + ApparentPowerCT3);
 
   if (DisplayFull == true) // Display Expanded Information
   {
@@ -397,32 +414,30 @@ void DisplayRegisters(boolean DisplayFull = true)
     Serial.println("Apparent Power CT2: " + String(ApparentPowerCT2) + " VA");
     Serial.println("Apparent Power CT3: " + String(ApparentPowerCT3) + " VA");
     PrintSeparator("Total Apparent Power: " + String(TotalApparentPower) + " VA (CT1~CT2~CT3)");
-    Serial.println("");
+
+    PrintSeparator("Calculated Total Apparent Power: " + String(CalculatedTotalApparentPower) + " W (CT1~CT2~CT3)");
+
+    Serial.println("\n");
   }
 
 #if ATM90DEVICE == ATM90E32_DEVICE
   if (DisplayFull == true) // Display Expanded Information
-  {
     PrintUnderline("Other Power Information");
-  }
 
   // Total Fundamental Power
   TotalActiveFundPower = NoiseFilterSquelch(eic.GetTotalActiveFundPower());
   if (DisplayFull == true) // Display Expanded Information
-  {
     Serial.println("Total Fundamental Power: " + String(TotalActiveFundPower) + " pH(t)\n");
-  }
 
   // Total Harmonic Power
   TotalActiveHarPower = NoiseFilterSquelch(eic.GetTotalActiveHarPower());
   if (DisplayFull == true) // Display Expanded Information
-  {
     Serial.println("Total Harmonic Power: " + String(TotalActiveHarPower) + " ");
-  }
 
 #endif
 
-  Serial.println("");
+  if (DisplayFull == true)
+    Serial.println("");
 
   // **************** OTHER ****************
 
@@ -431,6 +446,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   PowerFactorCT2 = NoiseFilterSquelch(eic.GetPowerFactorCT2(), 0.01, false);
   PowerFactorCT3 = NoiseFilterSquelch(eic.GetPowerFactorCT3(), 0.01, false);
   TotalPowerFactor = NoiseFilterSquelch(eic.GetTotalPowerFactor(), 0, false);
+
   if (DisplayFull == true) // Display Expanded Information
   {
     PrintUnderline("Power Factor");
@@ -445,6 +461,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   PhaseAngleCT1 = NoiseFilterSquelch(eic.GetPhaseCT1(), 0, true, 180);
   PhaseAngleCT2 = NoiseFilterSquelch(eic.GetPhaseCT2(), 0, true, 180);
   PhaseAngleCT3 = NoiseFilterSquelch(eic.GetPhaseCT3(), 0, true, 180);
+
   if (DisplayFull == true) // Display Expanded Information
   {
     PrintUnderline("Phase Angle");
@@ -453,34 +470,32 @@ void DisplayRegisters(boolean DisplayFull = true)
     Serial.println("Phase Angle CT3: " + String(PhaseAngleCT3));
     Serial.println("");
   }
+
   if (DisplayFull == true) // Display Expanded Information
-  {
     PrintUnderline("Other Information");
-  }
 
   // Chip Temperature
   ChipTemperature = NoiseFilterSquelch(eic.GetTemperature());
+
   if (DisplayFull == true) // Display Expanded Information
-  {
-    Serial.println("Chip Temperature: " + String(ChipTemperature) + " °C");
-    Serial.println("");
-  }
+    Serial.println("Chip Temperature: " + String(ChipTemperature) + " °C\n");
 
   // Line Frequency
   LineFrequency = NoiseFilterSquelch(eic.GetFrequency());
+
   if (DisplayFull == true) // Display Expanded Information
-  {
-    Serial.println("Mains Frequency: " + String(LineFrequency) + " Hz");
-    Serial.println("");
-  }
+    Serial.println("Mains Frequency: " + String(LineFrequency) + " Hz\n");
 
   // Read PCB NTC Temperature
-  ReadPCBTemperature(); // Read PCB NTC Temperature
+  if (DisplayFull == true)
+    ReadPCBTemperature(); // Read PCB NTC Temperature
 
-  Serial.println("");
+  if (DisplayFull == true)
+    Serial.println("");
 
   // Read PCB DCV_IN Voltage
-  ReadADCVoltage(); // Read AC>DC Input Voltage
+  if (DisplayFull == true)
+    ReadADCVoltage(); // Read AC>DC Input Voltage
 }
 
 // **************** SETUP ****************
@@ -501,9 +516,9 @@ void setup()
   Serial.println(AppName);
   Serial.println("");
 
-  // Initialise WiFi and OTA
+  // Initialise WiFi and WebServer/OTA
   InitialiseWiFi();
-  InitialiseOTA();
+  InitialiseWebServer();
 
   // Domoticz Integration
   if (EnableDomoticz == true)
@@ -528,7 +543,30 @@ void setup()
   // Check DCV_IN
   CheckDCVINVoltage();
 
-  // ****************  Initialise the ATM90E3x & Pass related calibrations to its library ****************
+  // WiFi Connection Status - Display on OLED
+  RSSIInformation();
+  oled.clear();
+  oled.setScale(2);
+  oled.setCursor(40, 0);
+  oled.print("Wi-Fi");
+  oled.setScale(1);
+  oled.setCursor(20, 2);
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    oled.print(WiFi.localIP().toString().c_str());
+    oled.setCursor(0, 3);
+    oled.print(String(WiFi.RSSI()) + "dBm " + RSSILevel);
+  }
+  else
+  {
+    oled.print("Not Connected");
+  }
+
+  oled.update();
+
+  delay(3000);
+
+// ****************  Initialise the ATM90E3x & Pass related calibrations to its library ****************
 
 // LineFreq = lineFreq, PGAGain = pgagain, VoltageGainX = ugain, CurrentGainCT1 = igainA, CurrentGainCT2 = igainB, CurrentGainCT3 = igainC, CurrentGainCTN = igainN
 #if ATM90DEVICE == ATM90E32_DEVICE && ATM_SPLITPHASE == true // Not Fully Tested.
@@ -571,7 +609,9 @@ void setup()
 void loop()
 {
 
-  // Basic Handler for ArduinoOTA
+  String sDIR = "";
+
+  // Basic Handler for WebServer
   CheckOTA();
 
   // Simple test for Loop to bypass EnableBasicLoop if User Button Pressed for ~ 1 Second
@@ -579,6 +619,105 @@ void loop()
   {
     DisplayRegisters();
     Serial.println("- - - / / - - -\n");
+  }
+
+  // Display Values to OLED Display
+  if (EnableOLEDLoop == true || OLED_Enabled == true)
+  {
+
+    DisplayRegisters(false); // Refresh Values and Display.  Default false = Mute Expanded Info to Serial
+
+    // Update the OLED Display
+    oled.clear();
+    oled.setScale(2);
+
+    if (LineVoltageAverage > 100) // Arbitrary Value
+    {
+
+      oled.setCursor(0, 2);
+
+      // Reset Counter
+      if (OLEDCount >= 3)
+        OLEDCount = 0;
+
+      OLEDCount++;
+
+      // Check Active Power and Display on Each Channel
+      oled.printf("%d: ", OLEDCount);
+
+      switch (OLEDCount)
+      {
+      case 1:
+        if (ActivePowerImportCT1 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerImportCT1);
+          sDIR = "Impt";
+        }
+        else if (ActivePowerExportCT1 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerExportCT1);
+          sDIR = "Expt";
+        }
+        else
+        {
+          oled.printf("0 W");
+          sDIR = "Zero";
+        }
+        break;
+
+      case 2:
+        if (ActivePowerImportCT2 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerImportCT2);
+          sDIR = "Impt";
+        }
+        else if (ActivePowerExportCT2 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerExportCT2);
+          sDIR = "Expt";
+        }
+        else
+        {
+          oled.printf("0 W");
+          sDIR = "Zero";
+        }
+        break;
+
+      case 3:
+        if (ActivePowerImportCT3 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerImportCT3);
+          sDIR = "Impt";
+        }
+        else if (ActivePowerExportCT1 > 0)
+        {
+          oled.printf("%.0f W", ActivePowerExportCT3);
+          sDIR = "Expt";
+        }
+        else
+        {
+          oled.printf("0 W");
+          sDIR = "Zero";
+        }
+        break;
+      }
+
+      // Header
+      oled.setCursor(0, 0);
+      oled.print(LineVoltageAverage, 0);
+      oled.println(" V " + sDIR);
+    }
+    else
+    {
+      // Houston, We may have a probem
+      oled.setCursor(0, 0);
+      oled.print("Please Chk");
+      oled.setCursor(0, 2);
+      oled.print("Line Volts");
+    }
+
+    // Write to OLED
+    oled.update();
   }
 
   // Publish Values to Domoticz (Set WiFi and Indexes)

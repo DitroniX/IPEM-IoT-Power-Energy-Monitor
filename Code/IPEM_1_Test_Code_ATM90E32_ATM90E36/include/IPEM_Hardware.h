@@ -16,12 +16,13 @@
 #include <driver/adc.h>
 #include <EmonLib.h>
 #include <IPEM_EEPROM.h>
+#include <GyverOLED.h>
 #include <ATM90E3x.h>
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230510";
+String AppVersion = "230520";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // Variables
@@ -31,16 +32,17 @@ int VoltageSensorRaw;    // ADC Raw Voltage Value
 float VoltageCalculated; // Calculated Voltage Value
 int VoltagePercentage;   // Voltage Percentage
 boolean OLED_Enabled;    // Auto Enabled if OLED Detected on I2C Scan
+int OLEDCount;           // OLED Information Counter
 
 // Variables ATM
 float LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage;
 float LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal;
 float CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower;
-float ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower;
+float ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower;
 float ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport;
 float ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport;
-float ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower;
-float ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower;
+float ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower;
+float ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower;
 float TotalActiveFundPower, TotalActiveHarPower;
 float PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor;
 float PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3;
@@ -60,15 +62,22 @@ uint64_t chipid = ESP.getEfuseMac();     // Get ChipID (essentially the MAC addr
 boolean DisableHardwareTest = false;     // Set to true to speed up booting.  Default false
 boolean EnableNoiseFilterSquelch = true; // This realtes to NoiseFilterSquelch Threshold.  false returns raw values.  Default true.
 
+// OLED Instance. You will need to select your OLED Display.   Uncomment/Comment as needed.
+GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"
+// GyverOLED<SSH1106_128x64> oled; // 1.1"
+// GyverOLED<SSD1306_128x32, OLED_NO_BUFFER> oled;
+// GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
+// GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled;
+
 // Create an Energy Monitor Library Instance (Used ONLY for CT4)
 EnergyMonitor emon1;
 
 // CT4 Energy Monitor Library Configuration
 // Initialize EmonLib (111.1 = EmonCalibration value, adjust as needed)
 // NB.  EmonCalibration set to 260 for low current bring-up testing < 1.5A with Burden NOT connected.  Update Burden and Values as required.
-float EmonCalibration = 260; // Used for bring-up calibration value.  To be calibrated.
-float EmonCalcIrms = 7400;
-float EmonThreshold = 0.2; // Used to squelch low values. Default 0.2
+float EmonCalibration = 260; // Used for bring-up EMON calibration value.  To be calibrated.  Default 1.
+float EmonCalcIrms = 7400;   // Calculate EMON Irms. Default 1480
+float EmonThreshold = 0.2;   // Used to squelch low values. Default 0.2
 
 // **************** ATM90Ex CALIBRATION SETTINGS GUIDE ****************
 // LineFreq = 389 for 50 Hz (World)  4485 for (North America)
@@ -90,10 +99,10 @@ unsigned short PGAGain = 0b0101010101111111; // PMPGA 0x17  | DPGA Gain = 2 and 
 // This is calculated based on the Bell Transformer DAT01 on 12V setting @ ~19V RMS.  Need to allow for +/- ~ 1% Tolerance.
 // Calculations: Base value for 240V is 38800.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
 // Calculations: Base value for 120V is 20200.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
-#if ATM_SINGLEVOLTAGE == true 
-unsigned short VoltageGain1 = 38800; // uGain = UgainA | 0x61	0x0002 40500 20000 42620 (10000 = ~60V)
-unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
-unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
+#if ATM_SINGLEVOLTAGE == true
+unsigned short VoltageGain1 = 38800;        // uGain = UgainA | 0x61	0x0002 40500 20000 42620 (10000 = ~60V)
+unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.
+unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3.
 #else
 unsigned short VoltageGain1 = 38800; // uGain = UgainA | 38800 Default Starting Value
 unsigned short VoltageGain2 = 38800; // uGain = UgainB | 38800 Default Starting Value
@@ -124,9 +133,9 @@ unsigned short PGAGain = 0b0101010101010101; // PMPGA 0x17  | DPGA Gain = 2 and 
 // Calculations: Base value for 240V is 20200.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
 // Calculations: Base value for 120V is 9700.  To increase/decrease change by Approx. ~100 per 1.0 V RMS.
 #if ATM_SINGLEVOLTAGE == true
-unsigned short VoltageGain1 = 20200; // uGain = UgainA | 20200 Default Starting Value
-unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.  
-unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3. 
+unsigned short VoltageGain1 = 20200;        // uGain = UgainA | 20200 Default Starting Value
+unsigned short VoltageGain2 = VoltageGain1; // Duplicate V1 Values to V2 and V3.
+unsigned short VoltageGain3 = VoltageGain1; // Duplicate V1 Values to V2 and V3.
 #else
 unsigned short VoltageGain1 = 20200; // uGain = UgainA | 20200 Default Starting Value
 unsigned short VoltageGain2 = 20200; // uGain = UgainB | 20200 Default Starting Value
@@ -221,7 +230,7 @@ void DisplayHEX(unsigned long var, unsigned char numChars)
 // Return Rounded Value to 2 decimals and Remove +/- Noise Threshold.  Default 0.02
 float NoiseFilterSquelch(float Value, float Threshold = 0.02, boolean AllowNegative = true, float ValueMax = 0)
 {
-  if (EnableNoiseFilterSquelch = true) // If false, output is raw value
+  if (EnableNoiseFilterSquelch == true) // If false, output is raw value
   {
     Value = roundf(Value * 100) / 100; // Round to 2 Decimal Places
 
@@ -248,7 +257,7 @@ float MapValues(float x, float DC_Min, float DC_Max, float Percentage_Min, float
 int CalculateADCAverage(int SensorChannel)
 {
   int AverageRAW = 0;
-  if (EnableAveraging = true)
+  if (EnableAveraging == true)
   {
 
     for (int i = 0; i < AverageSamples; i++)
@@ -270,7 +279,7 @@ int CalculateADCAverage(int SensorChannel)
 // Rough and Ready Underline Text.
 void PrintUnderline(String sText)
 {
-  int count;
+  int count = 0;
   Serial.println(sText);
 
   while (count <= sText.length())
@@ -284,7 +293,7 @@ void PrintUnderline(String sText)
 // Equally Rough and Ready Dash Separator
 void PrintSeparator(String sText)
 {
-  int count;
+  int count = 0;
 
   while (count <= (sText.length() / 2) + 1)
   {
@@ -325,6 +334,14 @@ void ConfigureBoard()
 
   // Initialize EEPROM
   InitializeEEPROM();
+
+  // OLED
+  oled.init();
+  oled.clear();
+  oled.setCursor(17, 0);
+  oled.setScale(5);
+  oled.print("IPEM");
+  oled.update();
 
 // Initialize ADC and EmonLib
 #if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
@@ -636,7 +653,7 @@ void CheckDCVINVoltage()
   // DCV_IN ReadADCVoltage
   yield();
   if (VoltageCalculated < 5)
-    Serial.print("* IPEM Board appears to be only USB Powered.  Not all ATM functions will work in this mode\n");
+    Serial.print("* IPEM Board appears to be only USB Powered.\n* Not all ATM functions will work in this mode\n");
   if (VoltageCalculated > 5)
     Serial.print("AC/DC Voltage Input Detected");
   if (VoltageCalculated > 30)

@@ -1,0 +1,103 @@
+Test Conditions.  Test 18th May 2023
+DitroniX Mains CT Bench Tester, with 3 x CT clamps on single phase to a Warmlite WL42005 Halogen Heater 1200W.
+Mains Voltage (243V), to Greenbrook DAT01A transformer, with single 12V AC output to three Voltage inputs on IPEM (So we see correct readings over three phases).
+This is a production IPEM AT90E32 board, with no calibration or corrections applied - just default firmware values.
+
+==============
+
+Register Status and Diagnostic Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID = 089A858D3A08   Firmware Version = 230519
+
+Hardware Configuration for ATM90E32
+────────────────────────────────────
+AC Voltage Inputs:      Single Input V1 will be used for Current Phase Calculations
+CT4 ISOLATED!.  CT4 Input is Full Isolated and will not be included in Current Calculations
+Split AC Voltage:       Dual  or Split Voltage Input Disabled
+CT Current Clamps:      Configured for 1, 2, 3 Phase
+
+[Status Values]
+System Status:          S0:0x370                S1:0xFF00
+Meter Status:           E0:0x300                E1:0x0
+
+Mains RMS Voltage
+──────────────────
+- - - - - - - - - - - - - - - - - - - - - - - - - - -
+Voltage 1: 243.34 V (Single Line Voltage Selected)
+
+Mains RMS Current
+──────────────────
+Current CT1: 4.94 A
+Current CT2: 4.95 A
+Current CT3: 4.96 A
+- - - - - - - - - - - - - - - - - - - - - - -
+Actual Total Current: 14.85 A (CT1~CT2~CT3)
+
+Calculated RMS Power
+─────────────────────
+Power V1*I1: 1202.10 W
+Power V1*I2: 1204.53 W
+Power V1*I3: 1206.97 W
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Power: 3631.00 W (CT1~CT2~CT3)
+
+Active Power (Absorbed or Used by the Load)
+────────────────────────────────────────────
+Active Power CT1: 1195.90 W     (Import)
+Active Power CT2: 1203.86 W     (Import)
+Active Power CT3: 1213.63 W     (Import)
+- - - - - - - - - - - - - - - - - - - - -
+Total Active Power: 2409.70 W   (Import)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Calculated Total Active Power: 3613.39 W (CT1~CT2~CT3)
+
+Re-Active Power
+────────────────
+ReActive Power CT1: 80.71 VAR
+ReActive Power CT2: 77.69 VAR
+ReActive Power CT3: 80.56 VAR
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Total ReActive Power: 161.31 VAR (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Reactive Power: 238.96 W (CT1~CT2~CT3)
+
+Apparent Power (Total Amount of Power Flowing from Source to Load)
+───────────────────────────────────────────────────────────────────
+Apparent Power CT1: 1200.06 VA
+Apparent Power CT2: 1207.88 VA
+Apparent Power CT3: 1217.76 VA
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Total Apparent Power: 2417.88 VA (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Apparent Power: 3625.70 W (CT1~CT2~CT3)
+
+
+Other Power Information
+────────────────────────
+Total Fundamental Power: 2407.90 pH(t)
+
+Total Harmonic Power: 2.80
+
+Power Factor
+─────────────
+Power Factor CT1: 1.00 PF
+Power Factor CT2: 1.00 PF
+Power Factor CT3: 1.00 PF
+- - - - - - - - - - - - - - -
+Total Power Factor: 1.00 PF
+
+Phase Angle
+────────────
+Phase Angle CT1: 3.80
+Phase Angle CT2: 3.60
+Phase Angle CT3: 3.80
+
+Other Information
+──────────────────
+Chip Temperature: 26.00 °C
+
+Mains Frequency: 50.07 Hz
+
+PCB Temperature Sensor (NTC_IN VN):     23.23 ºC
+
+ADC Raw: 2597 > ADC Adjusted: 2597 > Calculated: 24.73 V

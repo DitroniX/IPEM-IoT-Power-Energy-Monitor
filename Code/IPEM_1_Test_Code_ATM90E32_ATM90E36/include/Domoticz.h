@@ -39,10 +39,11 @@ int idxCalculatedPowerCT3 = 0;   // Calculated Power V*A Watts RMS
 int idxCalculatedPowerCT4 = 0;   // Calculated Power V*A Watts RMS (ESP)
 int idxCalculatedTotalPower = 0; // CalculatedTotalPower
 
-int idxActivePowerCT1 = 0;   // ActivePowerCT1 - Pmean - Line Mean Active Power
-int idxActivePowerCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active Power
-int idxActivePowerCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power
-int idxTotalActivePower = 0; // TotalActivePower - Pmean - Line Mean Active Power
+int idxActivePowerCT1 = 0;             // ActivePowerCT1 - Pmean - Line Mean Active Power
+int idxActivePowerCT2 = 0;             // ActivePowerCT2 - Pmean - Line Mean Active Power
+int idxActivePowerCT3 = 0;             // ActivePowerCT3 - Pmean - Line Mean Active Power
+int idxTotalActivePower = 0;           // TotalActivePower - Pmean - Line Mean Active Power
+int idxCalculatedTotalActivePower = 0; // CalculatedTotalActivePower - Pmean - Line Mean Active Power
 
 int idxActivePowerImportCT1 = 0;   // ActivePowerCT1 - Pmean - Line Mean Active Power Import
 int idxActivePowerImportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active Power Import
@@ -54,15 +55,17 @@ int idxActivePowerExportCT2 = 0;   // ActivePowerCT2 - Pmean - Line Mean Active 
 int idxActivePowerExportCT3 = 0;   // ActivePowerCT3 - Pmean - Line Mean Active Power Export
 int idxTotalActivePowerExport = 0; // TotalActivePower - Pmean - Line Mean Active Power Export
 
-int idxReactivePowerCT1 = 0;   // ReactivePowerCT1 - Pmean - Line Mean Active Power
-int idxReactivePowerCT2 = 0;   // ReactivePowerCT2 - Pmean - Line Mean Active Power
-int idxReactivePowerCT3 = 0;   // ReactivePowerCT3 - Pmean - Line Mean Active Power
-int idxTotalReactivePower = 0; // ReTotalActivePower - Pmean - Line Mean Active Power
+int idxReactivePowerCT1 = 0;             // ReactivePowerCT1 - Pmean - Line Mean Active Power
+int idxReactivePowerCT2 = 0;             // ReactivePowerCT2 - Pmean - Line Mean Active Power
+int idxReactivePowerCT3 = 0;             // ReactivePowerCT3 - Pmean - Line Mean Active Power
+int idxTotalReactivePower = 0;           // TotalReactivePower - Pmean - Line Mean Active Power
+int idxCalculatedTotalReactivePower = 0; // CalculatedTotalReactivePower - Pmean - Line Mean Active Power
 
-int idxApparentPowerCT1 = 0;   // ApparentPowerCT1 - Pmean - Line Mean Apparent Power
-int idxApparentPowerCT2 = 0;   // ApparentPowerCT2 - Pmean - Line Mean Apparent Power
-int idxApparentPowerCT3 = 0;   // ApparentPowerCT3 - Pmean - Line Mean Apparent Power
-int idxTotalApparentPower = 0; // TotalApparentPower - Pmean - Line Mean Apparent Power
+int idxApparentPowerCT1 = 0;             // ApparentPowerCT1 - Pmean - Line Mean Apparent Power
+int idxApparentPowerCT2 = 0;             // ApparentPowerCT2 - Pmean - Line Mean Apparent Power
+int idxApparentPowerCT3 = 0;             // ApparentPowerCT3 - Pmean - Line Mean Apparent Power
+int idxTotalApparentPower = 0;           // TotalApparentPower - Pmean - Line Mean Apparent Power
+int idxCalculatedTotalApparentPower = 0; // CalculatedTotalApparentPower - Pmean - Line Mean Apparent Power
 
 int idxTotalActiveFundPower = 0; // TotalActiveFundPower
 int idxTotalActiveHarPower = 0;  // TotalActiveHarPower
@@ -99,7 +102,6 @@ void DomoticzIntegration()
         Serial.println("Domoticz Publishing Disabled");
     }
 } // DomoticzIntegration
-
 
 // Publish to Domoticz - Single Values
 void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = "")
@@ -245,6 +247,10 @@ void PublishDomoticzValues()
         {
             PublishDomoticz(idxTotalActivePower, TotalActivePower, "TotalActivePower");
         }
+        if (idxCalculatedTotalActivePower > 0)
+        {
+            PublishDomoticz(idxCalculatedTotalActivePower, CalculatedTotalActivePower, "CalculatedTotalActivePower");
+        }
 
         // Active Power Import ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
         if (idxActivePowerImportCT1 > 0)
@@ -299,6 +305,10 @@ void PublishDomoticzValues()
         {
             PublishDomoticz(idxTotalReactivePower, TotalReactivePower, "TotalReactivePower");
         }
+        if (idxCalculatedTotalReactivePower > 0)
+        {
+            PublishDomoticz(idxCalculatedTotalReactivePower, CalculatedTotalReactivePower, "CalculatedTotalReactivePower");
+        }
 
         // Apparent Popwer ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower
         if (idxApparentPowerCT1 > 0)
@@ -316,6 +326,10 @@ void PublishDomoticzValues()
         if (idxTotalApparentPower > 0)
         {
             PublishDomoticz(idxTotalApparentPower, TotalApparentPower, "TotalApparentPower");
+        }
+        if (idxCalculatedTotalApparentPower > 0)
+        {
+            PublishDomoticz(idxCalculatedTotalApparentPower, CalculatedTotalApparentPower, "CalculatedTotalApparentPower");
         }
 
         // ActivePower TotalActiveFundPower, TotalActiveHarPower

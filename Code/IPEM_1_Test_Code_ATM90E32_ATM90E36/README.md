@@ -19,8 +19,12 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
+  * OLED 0.6" Display SSD1306 128x32.  (EnableOLEDLoop true)
 
-  **CALIBRATION (This should be minimal - based on the below)**
+**IPEM with OLED**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-with-OLED-Display.jpg?raw=true)
+
+  CALIBRATION (This should be minimal - based on the below)
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
@@ -32,14 +36,18 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * You can update board ATM Configurations in ATM90E3x.h
   * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
 
-  **WiFi and OTA Updates**
+  WiFi and OTA Updates
 
   * Setup WiFi
   * Setup Optional Static IP address and Gateway (DHCP or Static)
   * Setup Hostname
   * Setup Serial Device over IP (Used for OTA)
 
-  **DOMOTICZ**
+**IPEM with Integrated Push OTA Example**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true)
+
+  DOMOTICZ
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
