@@ -10,6 +10,13 @@ The IPEM Kit
 **IPEM Production - 3D Render**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/03/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2302.201P-3D-Model-v2-1024x708.png?raw=true)
 
+**IPEM with OLED**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-with-OLED-Display.jpg?raw=true)
+
+**IPEM with Integrated Push OTA Example**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true)
+
 Four fully tested versions of this board are planned. 
 
 The board layout is designed to be a flexible dual purpose.
