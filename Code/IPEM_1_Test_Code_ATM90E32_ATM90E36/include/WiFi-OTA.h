@@ -228,7 +228,7 @@ void InitialiseWebServer()
     if (WiFi.status() == WL_CONNECTED)
     {
         Serial.println("Initialise WebServer");
-
+        
         WebServerPageContent();
 
         // Display Web Page Upon Client Request
@@ -241,7 +241,8 @@ void InitialiseWebServer()
 
         ElegantOTA.begin(&server); // Start ElegantOTA
         server.begin();
-        Serial.println("HTTP server started");
+        Serial.println("HTTP Web Server Started");
+        Serial.println("Webpage can be found http://" + WiFi.localIP().toString() + "\n");
     }
 } // InitialiseWebServer
 
