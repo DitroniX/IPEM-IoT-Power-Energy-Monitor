@@ -111,19 +111,19 @@ void InitializeEEPROM()
   // EEPROM Validation
   if (readEEPROM16(0x00) == 0x00)
   {
-    Serial.print("\tFormatted OK");
+    Serial.print("\t(Formatted OK)");
   }
   if (readEEPROM16(0x00) == 0xFF)
   {
-    Serial.print("\tUnformatted");
+    Serial.print("\t(Unformatted)");
   }
   if (readEEPROM16(0x00) == 0x20)
   {
-    Serial.print("\tValidation OK");
+    Serial.print("\t(Validation OK)");
   }
   if (readEEPROM16(0x01) == 0x99)
   {
-    Serial.print("\tLocked");
+    Serial.print("\t(Locked)");
   }
 
   Serial.println("\n");

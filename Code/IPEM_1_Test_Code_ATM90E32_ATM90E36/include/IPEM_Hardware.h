@@ -22,8 +22,9 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230520";
+String AppVersion = "230522";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
+String LocationName = "Home"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
 
 // Variables
 float TemperatureC;      // Temperature
@@ -358,10 +359,12 @@ void DisplayBoardConfiguration()
   // Header
   Serial.println("Register Status and Diagnostic Report");
   Serial.println("IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor");
-  Serial.printf("ESP32 Serial ID = %04X", (uint16_t)(chipid >> 32));
+  Serial.printf("ESP32 Serial ID: %04X", (uint16_t)(chipid >> 32));
   Serial.printf("%08X", (uint32_t)chipid);
-  Serial.print("   Firmware Version = ");
-  Serial.println(AppVersion);
+  Serial.print("   Firmware Version: ");
+  Serial.print(AppVersion);
+  Serial.print("   Location: ");
+  Serial.println(LocationName);  
   Serial.println("");
 
   // Stabalise

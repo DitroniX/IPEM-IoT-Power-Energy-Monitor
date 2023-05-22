@@ -225,25 +225,29 @@ void WebServerRoot()
 // Initialise WebServer
 void InitialiseWebServer()
 {
-    Serial.println("Initialise WebServer");
+    if (WiFi.status() == WL_CONNECTED)
+    {
+        Serial.println("Initialise WebServer");
 
-    WebServerPageContent();
+        WebServerPageContent();
 
-    // Display Web Page Upon Client Request
-    server.on("", WebServerRoot);
+        // Display Web Page Upon Client Request
+        server.on("", WebServerRoot);
 
-    // Display Web Page Upon Invalid URL Client Request.  Faster than redirecting a 404 error.
-    server.onNotFound(WebServerRoot);
+        // Display Web Page Upon Invalid URL Client Request.  Faster than redirecting a 404 error.
+        server.onNotFound(WebServerRoot);
 
-    // Ignore SerialMonitor _handleRequest().  Future Options.
+        // Ignore SerialMonitor _handleRequest().  Future Options.
 
-    ElegantOTA.begin(&server); // Start ElegantOTA
-    server.begin();
-    Serial.println("HTTP server started");
+        ElegantOTA.begin(&server); // Start ElegantOTA
+        server.begin();
+        Serial.println("HTTP server started");
+    }
 } // InitialiseWebServer
 
 // Display Web Server Page for OTA
 void CheckOTA()
 {
-    server.handleClient();
+    if (WiFi.status() == WL_CONNECTED)
+        server.handleClient();
 } // CheckOTA

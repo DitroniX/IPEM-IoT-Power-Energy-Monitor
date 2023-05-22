@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 20th May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 22nd May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -31,6 +31,8 @@
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
   * OLED 0.6" Display SSD1306 128x32.  (EnableOLEDLoop true)
+  * Board Location and Firmware Version to OLED and Serial Monitor
+  * IP Address Defaults to DHCP.  Static IP Address Configuration in WiFi-OTA.h
 
   CALIBRATION (This should be minimal - based on the below)
 
@@ -88,10 +90,10 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // Constants
-const int LoopDelay = 1;                         // Loop Delay in Seconds.  Default 1.
-boolean EnableBasicLoop = false;                 // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
-boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information. Default true.
-boolean EnableOLEDLoop = true;                   // Set to true to enable OLED Display.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
+const int LoopDelay = 1;                        // Loop Delay in Seconds.  Default 1.
+boolean EnableBasicLoop = false;                // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
+boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information if DisplayFull is true. Default true.
+boolean EnableOLEDLoop = true;                  // Set to true to enable OLED Display.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
 
 // **************** FUNCTIONS AND ROUTINES ****************
 
@@ -103,7 +105,7 @@ void DisplayRegisters(boolean DisplayFull = true)
                             // Serial.println("\nDisplay Output (DisplayRegisters false), Set to Minimised");
 
     // Display Board Configuration
-    if (EnableDisplayBoardConfiguration == true)
+    if (EnableDisplayBoardConfiguration == true && DisplayFull == true)
       DisplayBoardConfiguration();
 
   // **************** VOLTAGE ****************
@@ -520,14 +522,35 @@ void setup()
   InitialiseWiFi();
   InitialiseWebServer();
 
-  // Domoticz Integration
+  // Header
+  Serial.println("Register Status and Startup Report");
+  Serial.println("IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor");
+  Serial.printf("ESP32 Serial ID: %04X", (uint16_t)(chipid >> 32));
+  Serial.printf("%08X", (uint32_t)chipid);
+  Serial.print("   Firmware Version: ");
+  Serial.println(AppVersion);
+  Serial.print("Board Location: ");
+  Serial.println(LocationName);
+  Serial.println("");
+
+  // WiFi Integration Status
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.println("Wi-Fi is Enabled");
+  }
+  else
+  {
+    Serial.println("Wi-Fi is Disabled");
+  }
+
+  // Domoticz Integration Status
   if (EnableDomoticz == true)
   {
     Serial.println("Domoticz Enabled - Register Values Will be Published");
   }
   else
   {
-    Serial.println("Domoticz Publishing Disabled");
+    Serial.println("Domoticz Publishing is Disabled");
   }
 
   // IPEM Board Port Configuration
@@ -543,11 +566,25 @@ void setup()
   // Check DCV_IN
   CheckDCVINVoltage();
 
+  // Firmware Version / Board Location - Display on OLED
+  oled.clear();
+  oled.setScale(2);
+  oled.setCursor(35, 0);
+  oled.print("IPEM");
+  oled.setScale(1);
+  oled.setCursor(0, 2);
+  oled.print("Firmware v" + AppVersion);
+  oled.setCursor(0, 3);
+  oled.print("Location " + LocationName);
+  oled.update();
+
+  delay(3000);
+
   // WiFi Connection Status - Display on OLED
   RSSIInformation();
   oled.clear();
   oled.setScale(2);
-  oled.setCursor(40, 0);
+  oled.setCursor(38, 0);
   oled.print("Wi-Fi");
   oled.setScale(1);
   oled.setCursor(20, 2);
@@ -559,7 +596,7 @@ void setup()
   }
   else
   {
-    oled.print("Not Connected");
+    oled.print(" Not Connected");
   }
 
   oled.update();
