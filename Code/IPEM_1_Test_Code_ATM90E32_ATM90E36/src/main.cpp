@@ -2,9 +2,11 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 22nd May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 23nd May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
+
+    > FIRMWARE CONFIGURATION INFO WIKI > https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Firmware-Configuration-and-Flashing
 
   This software has expanded way past it's original bring-up task and is now quite comprehensive.  It can now be, as is, used for both bring-up, final use and pubishing. Else, simply use the bits you like!
 
@@ -559,6 +561,8 @@ void setup()
   // Hardware Tests
   if (DisableHardwareTest == false)
   {
+    // Peripherals Test
+    PrintUnderline("Peripherals Test");
     TestRGB();    // Cycle RGB LED
     ScanI2CBus(); // Scan I2C Bus and Report Devices
   }

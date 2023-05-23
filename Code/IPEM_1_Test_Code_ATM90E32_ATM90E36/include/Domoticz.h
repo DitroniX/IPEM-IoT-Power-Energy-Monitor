@@ -14,7 +14,7 @@
 
 // Domoticz Server info.  Setup with your Domoticz IP and Port
 const char *domoticz_server = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
-int port = 8080;                         // Domoticz Network Port (Default)
+int port = 8080;                         // Domoticz Network Port (Default 8080)
 boolean EnableDomoticz = false;          // Change to true to enable read Loop and sending data to Domoticz.
 
 // Domoticz Hardware Device Indexes

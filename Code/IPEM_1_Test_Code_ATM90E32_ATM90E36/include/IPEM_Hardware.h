@@ -22,9 +22,11 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230522";
+String AppVersion = "230523";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
-String LocationName = "Home"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
+
+// App USER
+String LocationName = "House"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
 
 // Variables
 float TemperatureC;      // Temperature
@@ -53,15 +55,17 @@ float ChipTemperature, LineFrequency;
 float DCVoltage;      // DCV Input Voltage
 float PCBTemperature; // PCB NTC Temperature
 
-// Constants
+// Constants USER
 int VoltageRawFactor = 0;                // ADC Raw Adjustment for 2048 @ 1.65V Default 0
 float VoltageFactor = 39;                // Adjust as needed for Voltage Calibration. Default 39
 const int AverageSamples = 25;           // Average Multi-Samples.  Default 25
 const int AverageDelay = 20;             // Average Multi-Sample Delay. Default 20
 boolean EnableAveraging = true;          // Set to true to enable averaging (ESP32 DCV).  Default true
-uint64_t chipid = ESP.getEfuseMac();     // Get ChipID (essentially the MAC address)
 boolean DisableHardwareTest = false;     // Set to true to speed up booting.  Default false
 boolean EnableNoiseFilterSquelch = true; // This realtes to NoiseFilterSquelch Threshold.  false returns raw values.  Default true.
+
+// Constants Application
+uint64_t chipid = ESP.getEfuseMac();     // Get ChipID (essentially the MAC address)
 
 // OLED Instance. You will need to select your OLED Display.   Uncomment/Comment as needed.
 GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"

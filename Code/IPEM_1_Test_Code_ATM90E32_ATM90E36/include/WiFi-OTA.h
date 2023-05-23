@@ -40,20 +40,20 @@
 const char *ssid = "";     // WiFi Network SSID - Case Sensitive
 const char *password = ""; // WiFi Network password - Case Sensitive
 
+// Set your Static IP address and Gateway - Alternatively leave at (0, 0, 0, 0)
+IPAddress local_IP(0, 0, 0, 0); // Leave at (0, 0, 0, 0) if DHCP required
+IPAddress gateway(0, 0, 0, 0);   // Set to your Router IP = Gateway
+IPAddress subnet(255, 255, 255, 0);   // Should not need to change subnet from default (255, 255, 255, 0)
+
+// Optional DNS Defaults.
+IPAddress primaryDNS(0, 0, 0, 0);   // Defaults to your above Gateway IP if left as (0, 0, 0, 0)
+IPAddress secondaryDNS(8, 8, 4, 4); // For Google Public DNS use for Primary or Secondary (8,8,8,8) and/or (8,8,4,4)
+
 // WiFi Other
 WiFiClient client;               // Initialize the client library
 String HostNameHeader = "IPEM-"; // Hostname Prefix
 String HostName;                 // Hostname
 String RSSILevel;                // WiFi RSSI Level Information
-
-// Set your Static IP address and Gateway - Alternatively leave at (0, 0, 0, 0)
-IPAddress local_IP(0, 0, 0, 0);     // Leave at (0, 0, 0, 0) if DHCP required
-IPAddress gateway(0, 0, 0, 0);      // Set to your Router IP = Gateway
-IPAddress subnet(255, 255, 255, 0); // Should not need to change subnet from default (255, 255, 255, 0)
-
-// Optional DNS Defaults.
-IPAddress primaryDNS(0, 0, 0, 0);   // Defaults to your above Gateway IP if left as (0, 0, 0, 0)
-IPAddress secondaryDNS(8, 8, 4, 4); // For Google Public DNS use for Primary or Secondary (8,8,8,8) and/or (8,8,4,4)
 
 // NTP Time
 WiFiUDP ntpUDP;
@@ -61,7 +61,7 @@ NTPClient timeClient(ntpUDP);
 
 // Web Server.
 WebServer server(80);
-String page_header, page_css, page_title, page_wifi, page_updater, page_footer;
+String page_header, page_css, page_title, page_board, page_wifi, page_updater, page_footer;
 
 // ######### FUNCTIONS #########
 
@@ -73,7 +73,10 @@ void RSSIInformation()
 
     switch (-WiFi.RSSI()) // Inverted dBm Level ;)
     {
-    case 0 ... 50:
+    case 0 ... 30:
+        RSSILevel = "Signal Very Strong";
+        break;
+    case 31 ... 50:
         RSSILevel = "Signal Excellent";
         break;
     case 51 ... 60:
@@ -86,7 +89,7 @@ void RSSIInformation()
         RSSILevel = "Signal Good";
         break;
     case 81 ... 90:
-        RSSILevel = "Signal Low - Try Moving Position";
+        RSSILevel = "Signal Poor - Try Moving Position";
         break;
     case 91 ... 100:
         RSSILevel = "Signal Very Low! - Move Position";
@@ -210,7 +213,8 @@ void WebServerPageContent(void)
     page_header = "<!DOCTYPE HTML><html><head><title>IPEM v" + AppVersion + " ESP32 Home</title><meta name='viewport' content='width=device-width, initial-scale=1'></head>";
     page_css = "<style>h1 {text-align: center;}p {text-align: center;}div {text-align: center;}body {font-family: Arial, Helvetica, sans-serif;}</style>";
     page_title = "<body><h1>Welcome to the IPEM - Local Web Portal</h1><p><strong>" + AppName + "</strong><br>(Firmware Version " + AppVersion + ")</p>";
-    page_wifi = "<br><p>Board Hostname:<strong> " + HostName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi SSID:<strong> " + ssid + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi RSSI:<strong> " + String(WiFi.RSSI()) + " dBm (" + RSSILevel + ")" + "</strong></p><br>";
+    page_board = "<br><p>Board Location:<strong> " + LocationName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Device:<strong> ATM90E" + ATM90DEVICE + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAC Address: <strong>" + String(WiFi.macAddress()) + "</strong></p>";
+    page_wifi = "<p>Board Hostname:<strong> " + HostName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi SSID:<strong> " + ssid + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi RSSI:<strong> " + String(WiFi.RSSI()) + " dBm (" + RSSILevel + ")" + "</strong></p><br>";
     page_updater = "<br><p><strong>To Update the IPEM Firmware via Push OTA - <a href='http://localhost/update' target='_blank'>Click Here</a></strong><br></p>";
     page_footer = "<br><hr><p><small>Dave Williams&nbsp;&nbsp;| &nbsp;&nbsp;DitroniX&nbsp;| &nbsp;<a href='http://ditronix.net' target='_blank'>DitroniX.net</a>&nbsp;| &nbsp;<a href='https://github.com/DitroniX' target='_blank'>github.com/DitroniX</a>&nbsp;| &nbsp;<a href='https://www.hackster.io/ditronix' target='_blank'>hackster.io/DitroniX</a></small></p><p><a href='https://www.buymeacoffee.com/DitroniX' target='_blank'>Buy Me A Coffee</a></P></body></html>";
 } // WebServerPageContent
@@ -219,7 +223,7 @@ void WebServerPageContent(void)
 void WebServerRoot()
 {
     page_updater.replace("localhost", WiFi.localIP().toString().c_str());
-    server.send(200, "text/html", page_header + page_css + page_title + page_wifi + page_updater + page_footer);
+    server.send(200, "text/html", page_header + page_css + page_title + page_board + page_wifi + page_updater + page_footer);
 } // WebServerRoot
 
 // Initialise WebServer
@@ -228,7 +232,7 @@ void InitialiseWebServer()
     if (WiFi.status() == WL_CONNECTED)
     {
         Serial.println("Initialise WebServer");
-        
+
         WebServerPageContent();
 
         // Display Web Page Upon Client Request
@@ -246,9 +250,13 @@ void InitialiseWebServer()
     }
 } // InitialiseWebServer
 
-// Display Web Server Page for OTA
+// Display Web Server Page for Information and OTA
 void CheckOTA()
 {
     if (WiFi.status() == WL_CONNECTED)
+    {
+        WebServerPageContent(); // Refresh Content.  NB.Temporary Solution.
         server.handleClient();
+    }
+
 } // CheckOTA
