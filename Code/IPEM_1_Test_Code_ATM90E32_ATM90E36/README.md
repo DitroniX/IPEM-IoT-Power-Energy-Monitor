@@ -2,6 +2,8 @@
 Further details on this code options can be found in our Wiki
 https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E32-ATM90E36-Test-Code
 
+**For Installation, Flashing and Configuration information click [here](https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Firmware-Configuration-and-Flashing)**
+
   PCA 1.2302-20x - Test Code Firmware v1 - **Development Code - WORK-IN-PROGRESS**
   
   **CONFIGURATION (Setup for bring-up testing of the board)**
