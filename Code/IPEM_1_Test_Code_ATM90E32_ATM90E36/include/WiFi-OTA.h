@@ -37,20 +37,21 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // WiFi.  Setup with your Wireless Information.
+// const char *ssid = "";     // WiFi Network SSID - Case Sensitive
 const char *ssid = "";     // WiFi Network SSID - Case Sensitive
 const char *password = ""; // WiFi Network password - Case Sensitive
 
 // Set your Static IP address and Gateway - Alternatively leave at (0, 0, 0, 0)
-IPAddress local_IP(0, 0, 0, 0); // Leave at (0, 0, 0, 0) if DHCP required
-IPAddress gateway(0, 0, 0, 0);   // Set to your Router IP = Gateway
-IPAddress subnet(255, 255, 255, 0);   // Should not need to change subnet from default (255, 255, 255, 0)
+IPAddress local_IP(0, 0, 0, 0);     // Leave at (0, 0, 0, 0) if DHCP required
+IPAddress gateway(0, 0, 0, 0);      // Set to your Router IP = Gateway
+IPAddress subnet(255, 255, 255, 0); // Should not need to change subnet from default (255, 255, 255, 0)
 
 // Optional DNS Defaults.
 IPAddress primaryDNS(0, 0, 0, 0);   // Defaults to your above Gateway IP if left as (0, 0, 0, 0)
 IPAddress secondaryDNS(8, 8, 4, 4); // For Google Public DNS use for Primary or Secondary (8,8,8,8) and/or (8,8,4,4)
 
 // WiFi Other
-WiFiClient client;               // Initialize the client library
+WiFiClient wlan_client;          // Initialize the Client Library  / Client Instance
 String HostNameHeader = "IPEM-"; // Hostname Prefix
 String HostName;                 // Hostname
 String RSSILevel;                // WiFi RSSI Level Information

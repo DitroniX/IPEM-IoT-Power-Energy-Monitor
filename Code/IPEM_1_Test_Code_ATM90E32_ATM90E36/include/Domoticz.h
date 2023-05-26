@@ -13,9 +13,11 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // Domoticz Server info.  Setup with your Domoticz IP and Port
-const char *domoticz_server = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
-int port = 8080;                         // Domoticz Network Port (Default 8080)
+const char *DomoticzServer = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
+int DomoticzPort = 8080;                         // Domoticz Network Port (Default 8080)
 boolean EnableDomoticz = false;          // Change to true to enable read Loop and sending data to Domoticz.
+const char *Domoticz_User = "";         // Domoticz User - if applicable
+const char *Domoticz_Password = "";     // Domoticz Password - if applicable
 
 // Domoticz Hardware Device Indexes
 
@@ -109,7 +111,7 @@ void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = 
 
     if (Sensor_Index > 0)
     {
-        if (client.connect(domoticz_server, port))
+        if (wlan_client.connect(DomoticzServer, DomoticzPort))
         {
             Serial.print("Sending Message to Domoticz #");
             Serial.print(Sensor_Index);
@@ -118,23 +120,23 @@ void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = 
             Serial.print(" \t");
             Serial.println(Sensor_Name);
 
-            client.print("GET /json.htm?type=command&param=udevice&idx=");
-            client.print(Sensor_Index);
+            wlan_client.print("GET /json.htm?type=command&param=udevice&idx=");
+            wlan_client.print(Sensor_Index);
 
-            client.print("&svalue=");
-            client.print(Sensor_Value);
+            wlan_client.print("&svalue=");
+            wlan_client.print(Sensor_Value);
 
-            client.println(" HTTP/1.1");
-            client.print("Host: ");
-            client.print(domoticz_server);
-            client.print(":");
+            wlan_client.println(" HTTP/1.1");
+            wlan_client.print("Host: ");
+            wlan_client.print(DomoticzServer);
+            wlan_client.print(":");
 
-            client.println(port);
-            client.println("User-Agent: Arduino-ethernet");
-            client.println("Connection: close");
-            client.println();
+            wlan_client.println(DomoticzPort);
+            wlan_client.println("User-Agent: Arduino-ethernet");
+            wlan_client.println("Connection: close");
+            wlan_client.println();
 
-            client.stop();
+            wlan_client.stop();
         }
         else
         {
@@ -408,46 +410,46 @@ void PublishDomoticzATM(int Sensor_Index)
 {
     if (Sensor_Index > 0)
     {
-        if (client.connect(domoticz_server, port))
+        if (wlan_client.connect(DomoticzServer, DomoticzPort))
         {
             Serial.print("Sending ATM Group Message to Domoticz #");
             Serial.print(Sensor_Index);
 
-            client.print("GET /json.htm?type=command&param=udevice&idx=");
-            client.print(Sensor_Index);
+            wlan_client.print("GET /json.htm?type=command&param=udevice&idx=");
+            wlan_client.print(Sensor_Index);
 
             // // Potential values to select from and batch post to a single sensor
-            // client.print("&svalue=");
-            // client.print(String(LineVoltage));
-            // client.print(";");
-            // client.print(String(LineCurrent));
-            // client.print(";0;");
-            // client.print(String(LineFrequency));
-            // client.print(";0;");
-            // client.print(String(ActivePower));
-            // client.print(";0;");
-            // client.print(String(ImportEnergy));
-            // client.print(";0;");
-            // client.print(String(ExportEnergy));
-            // client.print(";0;");
-            // client.print(String(PowerFactor));
-            // client.print(";0;");
-            // client.print(String(DCVoltage));
-            // client.print(";0;");
-            // client.print(String(PCBTemperature));
-            // client.print(";0");
+            // wlan_client.print("&svalue=");
+            // wlan_client.print(String(LineVoltage));
+            // wlan_client.print(";");
+            // wlan_client.print(String(LineCurrent));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(LineFrequency));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(ActivePower));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(ImportEnergy));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(ExportEnergy));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(PowerFactor));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(DCVoltage));
+            // wlan_client.print(";0;");
+            // wlan_client.print(String(PCBTemperature));
+            // wlan_client.print(";0");
 
-            client.println(" HTTP/1.1");
-            client.print("Host: ");
-            client.print(domoticz_server);
-            client.print(":");
+            wlan_client.println(" HTTP/1.1");
+            wlan_client.print("Host: ");
+            wlan_client.print(DomoticzServer);
+            wlan_client.print(":");
 
-            client.println(port);
-            client.println("User-Agent: Arduino-ethernet");
-            client.println("Connection: close");
-            client.println();
+            wlan_client.println(DomoticzPort);
+            wlan_client.println("User-Agent: Arduino-ethernet");
+            wlan_client.println("Connection: close");
+            wlan_client.println();
 
-            client.stop();
+            wlan_client.stop();
         }
         else
         {

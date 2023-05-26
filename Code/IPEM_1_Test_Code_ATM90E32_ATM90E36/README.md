@@ -2,10 +2,19 @@
 Further details on this code options can be found in our Wiki
 https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E32-ATM90E36-Test-Code
 
-**For Installation, Flashing and Configuration information click [here](https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Firmware-Configuration-and-Flashing)**
-
   PCA 1.2302-20x - Test Code Firmware v1 - **Development Code - WORK-IN-PROGRESS**
   
+    > FIRMWARE CONFIGURATION INFO WIKI > https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Firmware-Configuration-and-Flashing
+
+  This software has expanded way past it's original bring-up task and is now quite comprehensive.  It can now be, as is, used for both bring-up, final use and pubishing. Else, simply use the bits you like!
+
+  A number of software switches are used, throughout.  The defalts are listed below.  You shold be able to just compile this current version to an IPEM ATM90E32 and see some valid results in the serial monitor / OLED.
+
+  Board Bring Up Test - ATM90E3x Test Routines (Output sent to the Serial Print - ONLY ON BOOT! Press RESET or HOLD USR Button to REFRESH)
+
+  Base 90E32/36 register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
+  VSCode base, E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, Comprehensive Functions, OTA and Domoticz Integration by Date Williams
+
   **CONFIGURATION (Setup for bring-up testing of the board)**
 
   This version of firmware code is by default, configured for:
@@ -18,15 +27,15 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Hardware Test - Enabled (DisableHardwareTest false)
   * Display of Board Configuration (EnableDisplayBoardConfiguration true)
   * Domoticz Publishing - Disabled (EnableDomoticz false)
+  * MQTT Publishing - Disabled (EnableMQTT false)
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
   * OLED 0.6" Display SSD1306 128x32.  (EnableOLEDLoop true)
+  * Board Location and Firmware Version to OLED and Serial Monitor
+  * IP Address Defaults to DHCP.  Static IP Address Configuration in WiFi-OTA.h
 
-**IPEM with OLED**
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-with-OLED-Display.jpg?raw=true)
-
-  CALIBRATION (This should be minimal - based on the below)
+  **CALIBRATION (This should be minimal - based on the below)**
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
@@ -38,23 +47,29 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * You can update board ATM Configurations in ATM90E3x.h
   * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
 
-  WiFi and OTA Updates
+  **WiFi and OTA Updates**
 
   * Setup WiFi
   * Setup Optional Static IP address and Gateway (DHCP or Static)
   * Setup Hostname
   * Setup Serial Device over IP (Used for OTA)
+  * Display WiFI Signal Meter
+  * Web Server Informatin Page and Push OTA Updater
 
-**IPEM with Integrated Push OTA Example**
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true)
-
-  DOMOTICZ
+  **DOMOTICZ**
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
+  *
 
-  *Enjoy!  Dave Williams*
+  **MQTT**
+
+  * Setup connection to MQTT Broker /  Home Automation
+  * Configure Required Values to Pubish to MQTT Broker
+
+
+  Enjoy!  Dave Williams, DitroniX.net
+
 
   **Remember!**
   * Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
@@ -62,7 +77,7 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * The SDK does NOT need external power to flash.  It will take Power from the USB 5V.
   * You can safely connect both USB Power and PSU AC In (Makes development much easier)
 
-  Note: In the default state, upon first power up and during reset, the Green LED may be partially lit. Once programmed and the GPIO defined, the Green LED will go off after power up.
+  **Note**: In the default state, upon first power up and during reset, the Green LED may be partially lit. Once programmed and the GPIO defined, the Green LED will go off after power up.
 
   This test code is OPEN SOURCE and formatted for easier viewing.  Although is is not intended for real world use, it may be freely used, or modified as needed.
   It is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

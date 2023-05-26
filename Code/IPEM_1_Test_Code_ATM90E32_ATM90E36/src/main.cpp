@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 23nd May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 26th May 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -29,6 +29,7 @@
   * Hardware Test - Enabled (DisableHardwareTest false)
   * Display of Board Configuration (EnableDisplayBoardConfiguration true)
   * Domoticz Publishing - Disabled (EnableDomoticz false)
+  * MQTT Publishing - Disabled (EnableMQTT false)
   * Loop Refreshing Terminal Output (EnableBasicLoop false) - Display Info ONCE uppon Reset.
   * Value Outputs are filtered through a Sofware Noise Filter / Comparator / Squelch (EnableNoiseFilterSquelch true)
   * When Publising to Domoticz - Mute Detailed Output to Serial (Loop)
@@ -61,6 +62,12 @@
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
+  *
+
+  MQTT
+
+  * Setup connection to MQTT Broker /  Home Automation
+  * Configure Required Values to Pubish to MQTT Broker
 
 
   Enjoy!  Dave Williams, DitroniX.net
@@ -88,14 +95,9 @@
 #include <IPEM_Hardware.h>
 #include <WiFi-OTA.h>
 #include <Domoticz.h>
+#include <MQTT.h>
 
-// ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
-
-// Constants
-const int LoopDelay = 1;                        // Loop Delay in Seconds.  Default 1.
-boolean EnableBasicLoop = false;                // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
-boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information if DisplayFull is true. Default true.
-boolean EnableOLEDLoop = true;                  // Set to true to enable OLED Display.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
+// USER VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS -> Moved to IPEM_Hardware
 
 // **************** FUNCTIONS AND ROUTINES ****************
 
@@ -523,6 +525,7 @@ void setup()
   // Initialise WiFi and WebServer/OTA
   InitialiseWiFi();
   InitialiseWebServer();
+  InitialiseMQTT();
 
   // Header
   Serial.println("Register Status and Startup Report");
@@ -546,13 +549,23 @@ void setup()
   }
 
   // Domoticz Integration Status
-  if (EnableDomoticz == true)
+  if (EnableDomoticz == true && WiFi.status() == WL_CONNECTED)
   {
     Serial.println("Domoticz Enabled - Register Values Will be Published");
   }
   else
   {
     Serial.println("Domoticz Publishing is Disabled");
+  }
+
+  // MQTT Integration Status
+  if (EnableMQTT == true && WiFi.status() == WL_CONNECTED)
+  {
+    Serial.println("MQTT Enabled - Register Values Will be Published");
+  }
+  else
+  {
+    Serial.println("MQTT Publishing is Disabled");
   }
 
   // IPEM Board Port Configuration
@@ -571,41 +584,47 @@ void setup()
   CheckDCVINVoltage();
 
   // Firmware Version / Board Location - Display on OLED
-  oled.clear();
-  oled.setScale(2);
-  oled.setCursor(35, 0);
-  oled.print("IPEM");
-  oled.setScale(1);
-  oled.setCursor(0, 2);
-  oled.print("Firmware v" + AppVersion);
-  oled.setCursor(0, 3);
-  oled.print("Location " + LocationName);
-  oled.update();
-
-  delay(3000);
-
-  // WiFi Connection Status - Display on OLED
-  RSSIInformation();
-  oled.clear();
-  oled.setScale(2);
-  oled.setCursor(38, 0);
-  oled.print("Wi-Fi");
-  oled.setScale(1);
-  oled.setCursor(20, 2);
-  if (WiFi.status() == WL_CONNECTED)
+  if (OLED_Enabled == true)
   {
-    oled.print(WiFi.localIP().toString().c_str());
+
+    Serial.println("Updating OLED");
+
+    oled.clear();
+    oled.setScale(2);
+    oled.setCursor(35, 0);
+    oled.print("IPEM");
+    oled.setScale(1);
+    oled.setCursor(0, 2);
+    oled.print("Firmware v" + AppVersion);
     oled.setCursor(0, 3);
-    oled.print(String(WiFi.RSSI()) + "dBm " + RSSILevel);
-  }
-  else
-  {
-    oled.print(" Not Connected");
-  }
+    oled.print("Location " + LocationName);
+    oled.update();
 
-  oled.update();
+    delay(3000);
 
-  delay(3000);
+    // WiFi Connection Status - Display on OLED
+    RSSIInformation();
+    oled.clear();
+    oled.setScale(2);
+    oled.setCursor(38, 0);
+    oled.print("Wi-Fi");
+    oled.setScale(1);
+    oled.setCursor(20, 2);
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      oled.print(WiFi.localIP().toString().c_str());
+      oled.setCursor(0, 3);
+      oled.print(String(WiFi.RSSI()) + "dBm " + RSSILevel);
+    }
+    else
+    {
+      oled.print(" Not Connected");
+    }
+
+    oled.update();
+
+    delay(3000);
+  }
 
 // ****************  Initialise the ATM90E3x & Pass related calibrations to its library ****************
 
@@ -762,10 +781,17 @@ void loop()
   }
 
   // Publish Values to Domoticz (Set WiFi and Indexes)
-  if (EnableDomoticz == true)
+  if (EnableDomoticz == true && WiFi.status() == WL_CONNECTED)
   {
     DisplayRegisters(false); // Refresh Values and Display.  Default false = Mute Expanded Info to Serial
     PublishDomoticzValues(); // Publish Values to Domoticz
+  }
+
+  // Publish Values to MQTT (Set WiFi and Indexes)
+  if (EnableMQTT == true && WiFi.status() == WL_CONNECTED)
+  {
+    DisplayRegisters(false); // Refresh Values and Display.  Default false = Mute Expanded Info to Serial
+    PublishMQTTValues();     // Publish Values to MQTT
   }
 
   // Heatbeat LED

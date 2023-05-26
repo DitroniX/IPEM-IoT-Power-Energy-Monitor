@@ -22,38 +22,11 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230523";
+String AppVersion = "230526";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // App USER
 String LocationName = "House"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
-
-// Variables
-float TemperatureC;      // Temperature
-float TemperatureF;      // Temperature
-int VoltageSensorRaw;    // ADC Raw Voltage Value
-float VoltageCalculated; // Calculated Voltage Value
-int VoltagePercentage;   // Voltage Percentage
-boolean OLED_Enabled;    // Auto Enabled if OLED Detected on I2C Scan
-int OLEDCount;           // OLED Information Counter
-
-// Variables ATM
-float LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage;
-float LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal;
-float CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower;
-float ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower;
-float ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport;
-float ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport;
-float ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower;
-float ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower;
-float TotalActiveFundPower, TotalActiveHarPower;
-float PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor;
-float PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3;
-float ChipTemperature, LineFrequency;
-
-// Variables PCB
-float DCVoltage;      // DCV Input Voltage
-float PCBTemperature; // PCB NTC Temperature
 
 // Constants USER
 int VoltageRawFactor = 0;                // ADC Raw Adjustment for 2048 @ 1.65V Default 0
@@ -64,8 +37,21 @@ boolean EnableAveraging = true;          // Set to true to enable averaging (ESP
 boolean DisableHardwareTest = false;     // Set to true to speed up booting.  Default false
 boolean EnableNoiseFilterSquelch = true; // This realtes to NoiseFilterSquelch Threshold.  false returns raw values.  Default true.
 
+// Constants
+const int LoopDelay = 1;                        // Loop Delay in Seconds.  Default 1.
+boolean EnableBasicLoop = false;                // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
+boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information if DisplayFull is true. Default true.
+boolean EnableOLEDLoop = true;                  // Set to true to enable OLED Display in Loop.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
+
+// CT4 Energy Monitor Library Configuration
+// Initialize EmonLib (111.1 = EmonCalibration value, adjust as needed)
+// NB.  EmonCalibration set to 260 for low current bring-up testing < 1.5A with Burden NOT connected.  Update Burden and Values as required.
+float EmonCalibration = 260; // Used for bring-up EMON calibration value.  To be calibrated.  Default 1.
+float EmonCalcIrms = 7400;   // Calculate EMON Irms. Default 1480
+float EmonThreshold = 0.2;   // Used to squelch low values. Default 0.2
+
 // Constants Application
-uint64_t chipid = ESP.getEfuseMac();     // Get ChipID (essentially the MAC address)
+uint64_t chipid = ESP.getEfuseMac(); // Get ChipID (essentially the MAC address)
 
 // OLED Instance. You will need to select your OLED Display.   Uncomment/Comment as needed.
 GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"
@@ -76,13 +62,6 @@ GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"
 
 // Create an Energy Monitor Library Instance (Used ONLY for CT4)
 EnergyMonitor emon1;
-
-// CT4 Energy Monitor Library Configuration
-// Initialize EmonLib (111.1 = EmonCalibration value, adjust as needed)
-// NB.  EmonCalibration set to 260 for low current bring-up testing < 1.5A with Burden NOT connected.  Update Burden and Values as required.
-float EmonCalibration = 260; // Used for bring-up EMON calibration value.  To be calibrated.  Default 1.
-float EmonCalcIrms = 7400;   // Calculate EMON Irms. Default 1480
-float EmonThreshold = 0.2;   // Used to squelch low values. Default 0.2
 
 // **************** ATM90Ex CALIBRATION SETTINGS GUIDE ****************
 // LineFreq = 389 for 50 Hz (World)  4485 for (North America)
@@ -155,6 +134,33 @@ unsigned short CurrentGainCT2 = 33500; // IgainA 0x65
 unsigned short CurrentGainCT3 = 33500; // IgainA 0x6A
 unsigned short CurrentGainCTN = 33500; // IgainA 0x6E
 #endif
+
+// Variables
+float TemperatureC;      // Temperature
+float TemperatureF;      // Temperature
+int VoltageSensorRaw;    // ADC Raw Voltage Value
+float VoltageCalculated; // Calculated Voltage Value
+int VoltagePercentage;   // Voltage Percentage
+boolean OLED_Enabled;    // Auto Enabled if OLED Detected on I2C Scan
+int OLEDCount;           // OLED Information Counter
+
+// Variables ATM
+float LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage;
+float LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal;
+float CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower;
+float ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower;
+float ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport;
+float ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport;
+float ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower;
+float ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower;
+float TotalActiveFundPower, TotalActiveHarPower;
+float PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor;
+float PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3;
+float ChipTemperature, LineFrequency;
+
+// Variables PCB
+float DCVoltage;      // DCV Input Voltage
+float PCBTemperature; // PCB NTC Temperature
 
 // **************** EMONLIB CT4 ****************
 #if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
@@ -340,13 +346,16 @@ void ConfigureBoard()
   // Initialize EEPROM
   InitializeEEPROM();
 
-  // OLED
-  oled.init();
-  oled.clear();
-  oled.setCursor(17, 0);
-  oled.setScale(5);
-  oled.print("IPEM");
-  oled.update();
+    // Initialize OLED
+  if (OLED_Enabled == true)
+  {
+    oled.init();
+    oled.clear();
+    oled.setCursor(17, 0);
+    oled.setScale(5);
+    oled.print("IPEM");
+    oled.update();
+  }
 
 // Initialize ADC and EmonLib
 #if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
@@ -368,7 +377,7 @@ void DisplayBoardConfiguration()
   Serial.print("   Firmware Version: ");
   Serial.print(AppVersion);
   Serial.print("   Location: ");
-  Serial.println(LocationName);  
+  Serial.println(LocationName);
   Serial.println("");
 
   // Stabalise
