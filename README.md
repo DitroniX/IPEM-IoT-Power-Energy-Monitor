@@ -15,7 +15,7 @@ The IPEM Kit
 
 **IPEM with Integrated Push OTA Example**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true)
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true) 
 
 Four fully tested versions of this board are planned. 
 
