@@ -17,13 +17,11 @@ The IPEM Kit
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true) 
 
-Four fully tested versions of this board are planned. 
+Four fully tested versions of this board are available. Thye most popular being ESP32E (PCB Ant), plus ATM90E32.
 
 The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
 - ATM90E32 or ATM90E36
-
-The initial production run will be for ATM90E32, both ESP32 variants.
 
 **CT Clamp Inputs**
 
