@@ -115,7 +115,17 @@ board variants will have FOUR CT inputs.
  - **Size** 70 mm x 53 mm
 
 
-**Remember!**
+
+------------
+
+**In The Box**
+
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/04/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2303.202P-Sealed-1024x672.jpg?raw=true)
+
+External Antenna Version
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-ESP32UE-ATM90E32-IoT-Power-Energy-Monitor-In-the-Box-scaled.jpg?raw=true)
+
+
 
 Our SDKs are WeMos D1 Mini flashing compatible
 Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
