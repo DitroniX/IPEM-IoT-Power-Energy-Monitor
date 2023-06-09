@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 26th May 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 7th June 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -61,14 +61,18 @@
   DOMOTICZ
 
   * Setup connection to Domoticz Home Automation
-  * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
+  * Configure Required Values to Publish to Domoticz Hardware Device Indexes
   *
 
   MQTT
 
-  * Setup connection to MQTT Broker /  Home Automation
-  * Configure Required Values to Pubish to MQTT Broker
+  * Setup connection to MQTT Broker / Home Automation
+  * Configure Required Values to Publish to MQTT Broker
 
+  ThingSpeak
+
+  * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
+  * Configure Required Values to Publish to ThingSpeak
 
   Enjoy!  Dave Williams, DitroniX.net
 
@@ -96,6 +100,7 @@
 #include <WiFi-OTA.h>
 #include <Domoticz.h>
 #include <MQTT.h>
+#include <ThingSpeakIoT.h>
 
 // USER VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS -> Moved to IPEM_Hardware
 
@@ -105,12 +110,12 @@
 void DisplayRegisters(boolean DisplayFull = true)
 {
 
-  if (DisplayFull == false) // Display Expanded Information
-                            // Serial.println("\nDisplay Output (DisplayRegisters false), Set to Minimised");
+  // if (DisplayFull == false) // Display Expanded Information
+  //   Serial.println("\nDisplay Output (DisplayRegisters false), Set to Minimised");
 
-    // Display Board Configuration
-    if (EnableDisplayBoardConfiguration == true && DisplayFull == true)
-      DisplayBoardConfiguration();
+  // Display Board Configuration
+  if (EnableDisplayBoardConfiguration == true && DisplayFull == true)
+    DisplayBoardConfiguration();
 
   // **************** VOLTAGE ****************
 
@@ -504,6 +509,60 @@ void DisplayRegisters(boolean DisplayFull = true)
     ReadADCVoltage(); // Read AC>DC Input Voltage
 }
 
+// Display WiFI Status OLED
+void DisplayOLEDWiFiStatus()
+{
+  // Firmware Version / Board Location - Display on OLED
+  if (OLED_Enabled == true && EnableOLEDLoop == true)
+
+  {
+
+    // WiFi Connection Status - Display on OLED
+    oled.clear();
+    OLEDPrint(AppAcronym, 2, 0);
+    OLEDPrint(LocationName, 2, 2);
+    oled.update();
+    delay(2000);
+
+    oled.clear();
+    OLEDPrint("Wi-Fi AP", 2, 0);
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      OLEDPrint("SSID:" + String(WiFi.SSID()), 1, 2);
+      OLEDPrint(String(WiFi.RSSI()) + "dBm " + RSSI_Info(WiFi.RSSI()), 1, 3);
+    }
+    else
+    {
+      OLEDPrint("Not Connected", 1, 2);
+      if (DisableWiFi == true)
+      {
+        OLEDPrint("Wi-Fi Force Disabled", 1, 3);
+      }
+    }
+
+    oled.update();
+    delay(2000);
+
+    if (DisableWiFi == false)
+    {
+      oled.clear();
+      OLEDPrint("Wi-Fi IP", 2, 0);
+      if (WiFi.status() == WL_CONNECTED)
+      {
+        OLEDPrint(WiFi.localIP().toString().c_str(), 1, 2);
+        OLEDPrint("Host:" + String(WiFi.getHostname()), 1, 3);
+      }
+
+      oled.update();
+      delay(2000);
+    }
+    else
+    {
+      OLEDPrint("Not Connected", 1, 2);
+    }
+  }
+} // DisplayOLEDWiFiStatus
+
 // **************** SETUP ****************
 void setup()
 {
@@ -522,10 +581,21 @@ void setup()
   Serial.println(AppName);
   Serial.println("");
 
+  // Initialize OLED
+  InitialiseOLED();
+
   // Initialise WiFi and WebServer/OTA
-  InitialiseWiFi();
-  InitialiseWebServer();
-  InitialiseMQTT();
+  if (DisableWiFi == false)
+  {
+    InitialiseWiFi();
+    InitialiseWebServer();
+    InitialiseMQTT();
+    InitialiseThingSpeak();
+  }
+  else
+  {
+    Serial.println("Wi-Fi Force Disabled");
+  }
 
   // Header
   Serial.println("Register Status and Startup Report");
@@ -576,55 +646,17 @@ void setup()
   {
     // Peripherals Test
     PrintUnderline("Peripherals Test");
-    TestRGB();    // Cycle RGB LED
-    ScanI2CBus(); // Scan I2C Bus and Report Devices
+    TestRGB(); // Cycle RGB LED
   }
+
+  // Scan I2C Bus and Report Devices
+  ScanI2CBus();
 
   // Check DCV_IN
   CheckDCVINVoltage();
 
-  // Firmware Version / Board Location - Display on OLED
-  if (OLED_Enabled == true)
-  {
-
-    Serial.println("Updating OLED");
-
-    oled.clear();
-    oled.setScale(2);
-    oled.setCursor(35, 0);
-    oled.print("IPEM");
-    oled.setScale(1);
-    oled.setCursor(0, 2);
-    oled.print("Firmware v" + AppVersion);
-    oled.setCursor(0, 3);
-    oled.print("Location " + LocationName);
-    oled.update();
-
-    delay(3000);
-
-    // WiFi Connection Status - Display on OLED
-    RSSIInformation();
-    oled.clear();
-    oled.setScale(2);
-    oled.setCursor(38, 0);
-    oled.print("Wi-Fi");
-    oled.setScale(1);
-    oled.setCursor(20, 2);
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      oled.print(WiFi.localIP().toString().c_str());
-      oled.setCursor(0, 3);
-      oled.print(String(WiFi.RSSI()) + "dBm " + RSSILevel);
-    }
-    else
-    {
-      oled.print(" Not Connected");
-    }
-
-    oled.update();
-
-    delay(3000);
-  }
+  // DisplayOLEDWiFiStatus
+  DisplayOLEDWiFiStatus();
 
 // ****************  Initialise the ATM90E3x & Pass related calibrations to its library ****************
 
@@ -691,7 +723,7 @@ void loop()
     oled.clear();
     oled.setScale(2);
 
-    if (LineVoltageAverage > 100) // Arbitrary Value
+    if (LineVoltageAverage > 100 || LineVoltage1 > 100) // Arbitrary Value
     {
 
       oled.setCursor(0, 2);
@@ -749,7 +781,7 @@ void loop()
           oled.printf("%.0f W", ActivePowerImportCT3);
           sDIR = "Impt";
         }
-        else if (ActivePowerExportCT1 > 0)
+        else if (ActivePowerExportCT3 > 0)
         {
           oled.printf("%.0f W", ActivePowerExportCT3);
           sDIR = "Expt";
@@ -764,16 +796,21 @@ void loop()
 
       // Header
       oled.setCursor(0, 0);
-      oled.print(LineVoltageAverage, 0);
+      oled.print(LineVoltage1, 0);
       oled.println(" V " + sDIR);
     }
     else
     {
       // Houston, We may have a probem
-      oled.setCursor(0, 0);
-      oled.print("Please Chk");
-      oled.setCursor(0, 2);
-      oled.print("Line Volts");
+      oled.clear();
+      OLEDPrint("Please Chk", 2, 0);
+      OLEDPrint("Line Volts", 2, 2);
+      oled.update();
+
+      delay(2000);
+
+      // DisplayOLEDWiFiStatus
+      DisplayOLEDWiFiStatus();
     }
 
     // Write to OLED
@@ -792,6 +829,13 @@ void loop()
   {
     DisplayRegisters(false); // Refresh Values and Display.  Default false = Mute Expanded Info to Serial
     PublishMQTTValues();     // Publish Values to MQTT
+  }
+
+  // Publish Values to ThingSpeak (Set WiFi and Indexes)
+  if (EnableThingSpeak == true && WiFi.status() == WL_CONNECTED)
+  {
+    DisplayRegisters(false);   // Refresh Values and Display.  Default false = Mute Expanded Info to Serial
+    PublishThingSpeakValues(); // Publish Values to ThingSpeak
   }
 
   // Heatbeat LED

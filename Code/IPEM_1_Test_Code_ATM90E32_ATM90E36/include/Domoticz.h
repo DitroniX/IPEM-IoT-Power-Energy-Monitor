@@ -14,10 +14,12 @@
 
 // Domoticz Server info.  Setup with your Domoticz IP and Port
 const char *DomoticzServer = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
-int DomoticzPort = 8080;                         // Domoticz Network Port (Default 8080)
-boolean EnableDomoticz = false;          // Change to true to enable read Loop and sending data to Domoticz.
+int DomoticzPort = 8080;                // Domoticz Network Port (Default 8080)
 const char *Domoticz_User = "";         // Domoticz User - if applicable
 const char *Domoticz_Password = "";     // Domoticz Password - if applicable
+
+// Enable Publishing
+boolean EnableDomoticz = false; // Change to true, to enable Loop reading and sending data to Domoticz.  Default false.
 
 // Domoticz Hardware Device Indexes
 
@@ -113,6 +115,9 @@ void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = 
     {
         if (wlan_client.connect(DomoticzServer, DomoticzPort))
         {
+            // Green LED
+            digitalWrite(LED_Green, LOW);
+
             Serial.print("Sending Message to Domoticz #");
             Serial.print(Sensor_Index);
             Serial.print(" ");
@@ -137,13 +142,28 @@ void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = 
             wlan_client.println();
 
             wlan_client.stop();
+
+            // Green LED
+            digitalWrite(LED_Green, HIGH);
         }
         else
         {
+            // Red LED
+            digitalWrite(LED_Red, LOW);
+
             Serial.println("WiFi or Domoticz Server Not Connected");
 
+            // Update OLED
+            oled.clear();
+            OLEDPrint("Error", 2, 0);
+            OLEDPrint("Domoticz", 2, 2);
+            oled.update();
+            delay(1000);
+
+            // Red LED
+            digitalWrite(LED_Red, HIGH);
+
             // Stabalise for slow Access Points
-            delay(2000);
             InitialiseWiFi();
         }
     }
@@ -395,7 +415,7 @@ void PublishDomoticzValues()
 
         // NTP Time
         timeClient.update();
-        Serial.println("\n" + timeClient.getFormattedTime() + "> Published to Domoticz");
+        Serial.println(timeClient.getFormattedTime() + "> Published to Domoticz\n");
     }
     else
     {
@@ -412,6 +432,9 @@ void PublishDomoticzATM(int Sensor_Index)
     {
         if (wlan_client.connect(DomoticzServer, DomoticzPort))
         {
+            // Green LED
+            digitalWrite(LED_Green, LOW);
+
             Serial.print("Sending ATM Group Message to Domoticz #");
             Serial.print(Sensor_Index);
 
@@ -450,10 +473,28 @@ void PublishDomoticzATM(int Sensor_Index)
             wlan_client.println();
 
             wlan_client.stop();
+
+            // Green LED
+            digitalWrite(LED_Green, HIGH);
         }
         else
         {
-            Serial.println("Not Connected");
+            // Red LED
+            digitalWrite(LED_Red, LOW);
+
+            Serial.println("WiFi or Domoticz Server Not Connected");
+
+            // Update OLED
+            oled.clear();
+            OLEDPrint("Error", 2, 0);
+            OLEDPrint("Domoticz", 2, 2);
+            oled.update();
+            delay(1000);
+
+            // Red LED
+            digitalWrite(LED_Red, HIGH);
+
+            // Stabalise for slow Access Points
             InitialiseWiFi();
         }
     }

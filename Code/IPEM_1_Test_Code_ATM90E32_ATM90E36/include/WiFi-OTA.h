@@ -27,19 +27,27 @@
 
 // Libraries
 #include <WiFi.h>
+#include <WiFiMulti.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <AsyncTCP.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ElegantOTA.h>
+#include <ATM90E3x.h>
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
-// WiFi.  Setup with your Wireless Information.
-// const char *ssid = "";     // WiFi Network SSID - Case Sensitive
-const char *ssid = "";     // WiFi Network SSID - Case Sensitive
-const char *password = ""; // WiFi Network password - Case Sensitive
+// WiFi.  Setup with your Wireless Information.  Add more as needed.
+const char *ssid1 = "";     // WiFi Network SSID - Case Sensitive
+const char *password1 = ""; // WiFi Network password - Case Sensitive
+const char *ssid2 = "";                    // WiFi Network SSID - Case Sensitive
+const char *password2 = "";                // WiFi Network password - Case Sensitive
+const char *ssid3 = "";                    // WiFi Network SSID - Case Sensitive
+const char *password3 = "";                // WiFi Network password - Case Sensitive
+
+// WiFi. Force Disable for Testing.  !!!!! BEWARE Outside of Local Developmet Do NOT Disable as OTA will NOT work !!!!!
+const boolean DisableWiFi = false; // Force Disable WiFi for Local USB Development and Testing Only
 
 // Set your Static IP address and Gateway - Alternatively leave at (0, 0, 0, 0)
 IPAddress local_IP(0, 0, 0, 0);     // Leave at (0, 0, 0, 0) if DHCP required
@@ -51,64 +59,70 @@ IPAddress primaryDNS(0, 0, 0, 0);   // Defaults to your above Gateway IP if left
 IPAddress secondaryDNS(8, 8, 4, 4); // For Google Public DNS use for Primary or Secondary (8,8,8,8) and/or (8,8,4,4)
 
 // WiFi Other
-WiFiClient wlan_client;          // Initialize the Client Library  / Client Instance
-String HostNameHeader = "IPEM-"; // Hostname Prefix
-String HostName;                 // Hostname
-String RSSILevel;                // WiFi RSSI Level Information
+WiFiClient wlan_client;                   // Initialize the Client Library  / Client Instance
+WiFiMulti wifiMulti;                      // Multiple WiFi Options - Auto Scanning
+String HostNameHeader = AppAcronym + "-"; // Hostname Prefix
+String HostName;                          // Hostname
+// String RSSILevel;                         // WiFi RSSI Level Information
+const uint32_t connectTimeoutMs = 10000; // WiFi connect timeout per AP. Increase when connecting takes longer.
 
 // NTP Time
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
+// United Kingdom (London, Belfast)
+// TimeChangeRule BST = {"BST", Last, Sun, Mar, 1, 60};        // British Summer Time
+// TimeChangeRule GMT = {"GMT", Last, Sun, Oct, 2, 0};         // Standard Time
+// Timezone UK(BST, GMT);
 
 // Web Server.
 WebServer server(80);
-String page_header, page_css, page_title, page_board, page_wifi, page_updater, page_footer;
+String page_header, page_css, page_title, page_board, page_wifi, page_detail, page_updater, page_footer;
 
 // ######### FUNCTIONS #########
 
-// Return some meaningful info from RSSI
-void RSSIInformation()
+// Return Some Meaningful Information From RSSI
+String RSSI_Info(int RSSI_Value)
 {
-
-    RSSILevel = "";
-
-    switch (-WiFi.RSSI()) // Inverted dBm Level ;)
+    switch (-RSSI_Value) // Inverted dBm Level ;)
     {
-    case 0 ... 30:
-        RSSILevel = "Signal Very Strong";
-        break;
-    case 31 ... 50:
-        RSSILevel = "Signal Excellent";
-        break;
-    case 51 ... 60:
-        RSSILevel = "Signal Healthy";
-        break;
-    case 61 ... 70:
-        RSSILevel = "Signal Very Good";
-        break;
-    case 71 ... 80:
-        RSSILevel = "Signal Good";
-        break;
-    case 81 ... 90:
-        RSSILevel = "Signal Poor - Try Moving Position";
-        break;
-    case 91 ... 100:
-        RSSILevel = "Signal Very Low! - Move Position";
-        break;
-    default:
-        RSSILevel = "No Signal :(";
-        break;
+        {
+        case 0 ... 30:
+            return "Signal Very Strong";
+            break;
+        case 31 ... 50:
+            return "Signal Excellent";
+            break;
+        case 51 ... 60:
+            return "Signal Healthy";
+            break;
+        case 61 ... 70:
+            return "Signal Very Good";
+            break;
+        case 71 ... 80:
+            return "Signal Good";
+            break;
+        case 81 ... 90:
+            return "Signal Poor - Try Moving Position";
+            break;
+        case 91 ... 100:
+            return "Signal Very Low! - Move Position";
+            break;
+        default:
+            return "No Signal :(";
+            break;
+        }
     }
-} // RSSIInformation
+
+} // RSSI_Info
 
 // Wifi Information
 void DisplayWiFiConfiguration()
 {
 
-    RSSIInformation();
+    // RSSIInformation();
 
     PrintUnderline("Connection Details:");
-    Serial.println("WiFi SSID \t " + String(ssid) + " (Wifi Station Mode)");
+    Serial.println("WiFi SSID \t " + String(WiFi.SSID()) + " (Wifi Station Mode)");
 
     if (local_IP.toString() == WiFi.localIP().toString().c_str())
     {
@@ -125,7 +139,7 @@ void DisplayWiFiConfiguration()
     Serial.printf("WiFi DNS 2 \t %s\n", WiFi.dnsIP(1).toString().c_str());
     Serial.println("WiFi MAC \t " + WiFi.macAddress());
     Serial.printf("WiFi Hostname \t %s\n", WiFi.getHostname());
-    Serial.println("WiFi RSSI \t " + String(WiFi.RSSI()) + " dBm (" + RSSILevel + ")");
+    Serial.println("WiFi RSSI \t " + String(WiFi.RSSI()) + " dBm (" + RSSI_Info(WiFi.RSSI()) + ")");
 
     Serial.println("");
 } // DisplayWiFiConfiguration
@@ -164,8 +178,6 @@ void InitialiseStaticIP()
                 Serial.println("STA Static IP Failed to configure");
             }
         }
-
-        // Serial.printf("WiFI Static IP\t \t %s\n", WiFi.localIP().toString().c_str());
     }
 } // InitialiseStaticIP
 
@@ -174,57 +186,115 @@ void InitialiseWiFi()
 {
 
     // Connect or reconnect to WiFi
-    if (WiFi.status() != WL_CONNECTED && strlen(ssid))
+    if (WiFi.status() != WL_CONNECTED && strlen(ssid1))
     {
-        Serial.println("Attempting to connect to " + String(ssid) + "\n");
 
-        // Force Local IP and Make Static
-        InitialiseStaticIP();
+        // Green LED
+        digitalWrite(LED_Green, LOW);
 
-        ForceHostName();
-
-        // Wifi Initialisation
-        WiFi.begin(ssid, password);
-
-        // Stabalise for Slow Access Points
-        while (WiFi.status() != WL_CONNECTED)
-        {
-            delay(500);
-            Serial.print(".");
-        }
-
-        Serial.println("\n\nConnected to " + String(ssid) + "\n");
+        // App and Starting...
+        oled.clear();
+        OLEDPrint(AppAcronym, 2, 0);
+        OLEDPrint("Cnx Wi-Fi ", 2, 2);
+        oled.update();
 
         // Wifi Settings
         WiFi.mode(WIFI_STA);
         WiFi.setAutoReconnect(true);
         WiFi.persistent(true);
 
-        // Wifi Information
-        DisplayWiFiConfiguration();
+        // Multi-WiFi Connections.  Add more as needed.
+        if (strlen(ssid1))
+            wifiMulti.addAP(ssid1, password1);
+        if (strlen(ssid2))
+            wifiMulti.addAP(ssid2, password2);
+        if (strlen(ssid3))
+            wifiMulti.addAP(ssid3, password3);
 
-        // Time Server
-        timeClient.begin();
+        Serial.println("Scanning WiFi Networks... Please wait...");
+        int n = WiFi.scanNetworks();
+
+        if (n == 0)
+        {
+            Serial.println("No Wi-FI Networks Found");
+        }
+        else
+        {
+            Serial.print(n);
+            Serial.println(" x Wi-Fi Networks Found");
+            for (int i = 0; i < n; ++i)
+            {
+                // Print SSID and RSSI for Each Network Found
+                Serial.print(" ");
+                Serial.print(i + 1);
+                Serial.print(": ");
+                Serial.printf("%25s", WiFi.SSID(i).c_str());
+                Serial.print(" (");
+                Serial.print(WiFi.RSSI(i));
+                Serial.print(" dBm " + RSSI_Info(WiFi.RSSI(i)) + ")");
+                Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+                delay(10);
+            }
+        }
+
+        // Connect to Wi-Fi using wifiMulti (connects to the SSID with strongest connection)
+        Serial.println("\nConnecting WiFi...");
+
+        while (wifiMulti.run() != WL_CONNECTED)
+        { // Wait for the Wi-Fi to connect: scan for Wi-Fi networks, and connect to the strongest of the networks above
+            delay(500);
+            Serial.print('.');
+        }
+
+        // Green LED
+        digitalWrite(LED_Green, HIGH);
+
+        // if (wifiMulti.run() == WL_CONNECTED)
+        {
+            // // Stabalise for Slow Access Points
+            // while (WiFi.status() != WL_CONNECTED)
+            // {
+            //     delay(500);
+            //     Serial.print(".");
+            // }
+
+            Serial.println("Connected to " + String(WiFi.SSID()) + "\n");
+
+            delay(500);
+
+            // Force Local IP and Make Static
+            InitialiseStaticIP();
+
+            ForceHostName();
+
+            // Wifi Information
+            DisplayWiFiConfiguration();
+
+            // Time Server
+            timeClient.begin();
+            // }
+        }
     }
 } // InitialiseWiFi
 
 void WebServerPageContent(void)
 {
     // This section is made up of HTML/CSS Strings, which the ESP32 Web Server will hopefully deliver the page content.
-    page_header = "<!DOCTYPE HTML><html><head><title>IPEM v" + AppVersion + " ESP32 Home</title><meta name='viewport' content='width=device-width, initial-scale=1'></head>";
+    page_header = "<!DOCTYPE HTML><html><head><title>" + AppAcronym + " v" + AppVersion + " ESP32 Home</title><meta name='viewport' content='width=device-width, initial-scale=1'></head>";
     page_css = "<style>h1 {text-align: center;}p {text-align: center;}div {text-align: center;}body {font-family: Arial, Helvetica, sans-serif;}</style>";
-    page_title = "<body><h1>Welcome to the IPEM - Local Web Portal</h1><p><strong>" + AppName + "</strong><br>(Firmware Version " + AppVersion + ")</p>";
+    page_title = "<body><h1>Welcome to the " + AppAcronym + " - Local Web Portal</h1><p><strong>" + AppName + "</strong><br>(Firmware Version " + AppVersion + ")</p>";
     page_board = "<br><p>Board Location:<strong> " + LocationName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Device:<strong> ATM90E" + ATM90DEVICE + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAC Address: <strong>" + String(WiFi.macAddress()) + "</strong></p>";
-    page_wifi = "<p>Board Hostname:<strong> " + HostName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi SSID:<strong> " + ssid + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi RSSI:<strong> " + String(WiFi.RSSI()) + " dBm (" + RSSILevel + ")" + "</strong></p><br>";
-    page_updater = "<br><p><strong>To Update the IPEM Firmware via Push OTA - <a href='http://localhost/update' target='_blank'>Click Here</a></strong><br></p>";
-    page_footer = "<br><hr><p><small>Dave Williams&nbsp;&nbsp;| &nbsp;&nbsp;DitroniX&nbsp;| &nbsp;<a href='http://ditronix.net' target='_blank'>DitroniX.net</a>&nbsp;| &nbsp;<a href='https://github.com/DitroniX' target='_blank'>github.com/DitroniX</a>&nbsp;| &nbsp;<a href='https://www.hackster.io/ditronix' target='_blank'>hackster.io/DitroniX</a></small></p><p><a href='https://www.buymeacoffee.com/DitroniX' target='_blank'>Buy Me A Coffee</a></P></body></html>";
+    page_wifi = "<p>Board Hostname:<strong> " + HostName + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi SSID:<strong> " + String(WiFi.SSID()) + "</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wi-Fi RSSI:<strong> " + String(WiFi.RSSI()) + " dBm (" + RSSI_Info(WiFi.RSSI()) + ")" + "</strong></p><br>";
+    page_detail = "";
+    page_updater = "<br><p><strong>To Update the " + AppAcronym + " Firmware via Push OTA - <a href='http://localhost/update' target='_blank'>Click Here</a></strong><br></p><p><small>(Load compiled <i>firmware.bin</i> file - located in<strong> 'IPEM_1_Test_Code_ATM90E32_ATM90E36 > .pio > build > wemos_d1_mini32'</small></strong>)</p><br>";
+    page_footer = "<br><hr><p><small>Dave Williams&nbsp;&nbsp; | &nbsp;&nbsp;DitroniX&nbsp; | &nbsp;<a href='http://ditronix.net' target='_blank'>DitroniX.net</a>&nbsp; | &nbsp;<a href='https://github.com/DitroniX' target='_blank'>github.com/DitroniX</a>&nbsp; | &nbsp;<a href='https://www.hackster.io/ditronix' target='_blank'>hackster.io/DitroniX</a></small></p><p><a href='https://www.buymeacoffee.com/DitroniX' target='_blank'>Buy Me A Coffee</a></P></body></html>";
 } // WebServerPageContent
 
 // WebServer Pages 200 (and 400).
 void WebServerRoot()
 {
     page_updater.replace("localhost", WiFi.localIP().toString().c_str());
-    server.send(200, "text/html", page_header + page_css + page_title + page_board + page_wifi + page_updater + page_footer);
+    server.send(200, "text/html", page_header + page_css + page_title + page_board + page_wifi + page_detail + page_updater + page_footer);
 } // WebServerRoot
 
 // Initialise WebServer

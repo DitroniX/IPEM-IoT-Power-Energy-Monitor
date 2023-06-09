@@ -11,17 +11,20 @@
 */
 
 // Libraries
+#include <Arduino.h>
 #include <PubSubClient.h> // https://pubsubclient.knolleary.net/api
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // MQTT Server info.  Setup with your MQTT Configration
 const char *MQTTServer = "0.0.0.0"; // MQTT Server IP Address (Typically a Fixed Local Address)
-int MQTTPort = 1883;                      // MQTT Network Port (Default 1883)
-boolean EnableMQTT = true;                // Change to true to enable read Loop and sending data to MQTT.  Default false.
-const char *MQTTUser = "";                // MQTT User - if applicable
-const char *MQTTPassword = "";            // MQTT Password - if applicable
-String MQTTTopicMain = "ipem";            // MQTT Default Topic. Exclude the trailing /
+int MQTTPort = 1883;                // MQTT Network Port (Default 1883)
+const char *MQTTUser = "";          // MQTT User - if applicable
+const char *MQTTPassword = "";      // MQTT Password - if applicable
+String MQTTTopicMain = "ipem";      // MQTT Default Topic. Exclude the trailing /
+
+// Enable Publishing
+boolean EnableMQTT = false; // Change to true, to enable Loop reading and sending data to MQTT.  Default false.
 
 // MQTT Object / Client Instance
 PubSubClient mqtt_client(wlan_client);
@@ -50,6 +53,10 @@ void PublishMQTTMessage(String SensorName, float SensorValue, int dPlaces = 1, i
     if (mqtt_client.connect("wlan_client", MQTTUser, MQTTPassword))
     // if (mqtt_client.connected)
     {
+
+        // Green LED
+        digitalWrite(LED_Green, LOW);
+
         // Format Sensor Message to MQTTTopic
         String SensorMessage = MQTTTopicMain + "/" + SensorName;
         int str_len = SensorMessage.length() + 1;
@@ -61,7 +68,7 @@ void PublishMQTTMessage(String SensorName, float SensorValue, int dPlaces = 1, i
         dtostrf(SensorValue, dWidth, dPlaces, MQTTPayload);
 
         // Update Serial Monitor
-        Serial.print("Sending Message to MQTT: ");
+        Serial.print("Sending MQTT Message: ");
         Serial.print(MQTTTopic);
         Serial.print("\t");
         Serial.println(MQTTPayload);
@@ -69,6 +76,29 @@ void PublishMQTTMessage(String SensorName, float SensorValue, int dPlaces = 1, i
         // Publish
         mqtt_client.publish(MQTTTopic, MQTTPayload);
         // mqtt_client.publish("ipem/test/1", 0);
+
+        // Green LED
+        digitalWrite(LED_Green, HIGH);
+    }
+    else
+    {
+        // Red LED
+        digitalWrite(LED_Red, LOW);
+
+        Serial.println("WiFi or MQTT Broker Not Connected");
+
+        // Update OLED
+        oled.clear();
+        OLEDPrint("Error", 2, 0);
+        OLEDPrint("MQTT", 2, 2);
+        oled.update();
+        delay(1000);
+
+        // Red LED
+        digitalWrite(LED_Red, HIGH);
+
+        // Stabalise for slow Access Points
+        InitialiseWiFi();
     }
 } // PublishMQTTMessage
 
@@ -112,6 +142,3 @@ void PublishMQTTValues()
     Serial.println("");
 
 } // PublishMQTTValues
-
-
-

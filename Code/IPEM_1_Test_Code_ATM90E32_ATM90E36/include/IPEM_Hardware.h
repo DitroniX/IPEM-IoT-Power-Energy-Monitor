@@ -22,11 +22,12 @@
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230526";
+String AppVersion = "230607";
+String AppAcronym = "IPEM";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // App USER
-String LocationName = "House"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
+String LocationName = "GTIL"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
 
 // Constants USER
 int VoltageRawFactor = 0;                // ADC Raw Adjustment for 2048 @ 1.65V Default 0
@@ -39,11 +40,11 @@ boolean EnableNoiseFilterSquelch = true; // This realtes to NoiseFilterSquelch T
 
 // Constants
 const int LoopDelay = 1;                        // Loop Delay in Seconds.  Default 1.
-boolean EnableBasicLoop = false;                // Set to true to display loop readings and displaying only one per reset cycle.  Default false.
-boolean EnableDisplayBoardConfiguration = true; // Set to true to display board software configuration Information if DisplayFull is true. Default true.
+boolean EnableBasicLoop = false;                // Set to true to display, in Serial Monitor, loop readings and displaying only one per reset cycle.  Default false.
+boolean EnableDisplayBoardConfiguration = true; // Set to true to display, in Serial Monitor, board software configuration Information if DisplayFull is true. Default true.
 boolean EnableOLEDLoop = true;                  // Set to true to enable OLED Display in Loop.  Over-ride via I2C Scan.  Check OLED Instance in IPEM_Hardware, for OLED Selection.  Default true.
 
-// CT4 Energy Monitor Library Configuration
+// CT4 Energy Monitor Library Configuration with ESP32 ADC as the forth input
 // Initialize EmonLib (111.1 = EmonCalibration value, adjust as needed)
 // NB.  EmonCalibration set to 260 for low current bring-up testing < 1.5A with Burden NOT connected.  Update Burden and Values as required.
 float EmonCalibration = 260; // Used for bring-up EMON calibration value.  To be calibrated.  Default 1.
@@ -55,10 +56,11 @@ uint64_t chipid = ESP.getEfuseMac(); // Get ChipID (essentially the MAC address)
 
 // OLED Instance. You will need to select your OLED Display.   Uncomment/Comment as needed.
 GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"
+// GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled; // 0.6"
 // GyverOLED<SSH1106_128x64> oled; // 1.1"
+// GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled; // 1.1"
 // GyverOLED<SSD1306_128x32, OLED_NO_BUFFER> oled;
 // GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
-// GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled;
 
 // Create an Energy Monitor Library Instance (Used ONLY for CT4)
 EnergyMonitor emon1;
@@ -136,13 +138,13 @@ unsigned short CurrentGainCTN = 33500; // IgainA 0x6E
 #endif
 
 // Variables
-float TemperatureC;      // Temperature
-float TemperatureF;      // Temperature
-int VoltageSensorRaw;    // ADC Raw Voltage Value
-float VoltageCalculated; // Calculated Voltage Value
-int VoltagePercentage;   // Voltage Percentage
-boolean OLED_Enabled;    // Auto Enabled if OLED Detected on I2C Scan
-int OLEDCount;           // OLED Information Counter
+float TemperatureC;           // Temperature
+float TemperatureF;           // Temperature
+int VoltageSensorRaw;         // ADC Raw Voltage Value
+float VoltageCalculated;      // Calculated Voltage Value
+int VoltagePercentage;        // Voltage Percentage
+boolean OLED_Enabled = false; // Auto Enabled if OLED Detected on I2C Scan
+int OLEDCount;                // OLED Information Counter
 
 // Variables ATM
 float LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage;
@@ -316,6 +318,87 @@ void PrintSeparator(String sText)
   Serial.println(sText);
 } // PrintSeparator
 
+// Print Text to OLED.  Font 1-4.
+void OLEDPrint(String TextS, int FontSize = 2, int PosY = 0, boolean FontCentre = true, float DisplayR = 0.6)
+{
+  int PosX;
+  oled.setScale(FontSize);
+
+  if (FontCentre == true)
+  {
+
+    // Font Fudge Factor
+    unsigned int ValueCount = TextS.length() / 2;
+
+    switch (FontSize)
+    {
+    case 1:                             // Small Font
+      PosX = (58 - ((ValueCount * 5))); // Approximate Middle (Default 5)
+      break;
+    case 2:                              // Medium Font
+      PosX = (58 - ((ValueCount * 10))); // Approximate Middle (Default 10)
+      break;
+    case 3:                              // Bit Larger Font
+      PosX = (58 - ((ValueCount * 17))); // Approximate Middle (Default 17)
+      PosY = 0;                          // Y can be 0 or 1.  Leave at 0.
+      break;
+    case 4:                              // Large Font
+      PosX = (58 - ((ValueCount * 23))); // Approximate Middle (Default 23)
+      PosY = 0;                          // Y needs to be 0.
+      break;
+    default:
+      PosX = (58 - ((ValueCount * 5))); // Approximate Middle
+      FontSize = 1;
+      PosY = 0;
+      break;
+    }
+
+    if (PosX < 0)
+      PosX = 0;
+  }
+
+  // Hopefully Display Something Meaningful... If not, 42 is a Good Number.
+  oled.setCursor(PosX, PosY);
+  oled.print(TextS);
+} // OLEDPrint
+
+// Initialise OLED
+void InitialiseOLED()
+{
+  if (OLED_Enabled == true || EnableOLEDLoop == true)
+  {
+    Serial.println("Initialise OLED (If Plugged In)\n");
+
+    oled.init();
+
+    oled.clear();
+    OLEDPrint(AppAcronym, 4, 0);
+    oled.update();
+    delay(2000);
+
+    // App and Firmware Version
+    oled.clear();
+    OLEDPrint(AppAcronym, 2, 0);
+    OLEDPrint("v " + AppVersion, 2, 2);
+    oled.update();
+    delay(2000);
+
+    // App and Location
+    oled.clear();
+    OLEDPrint(AppAcronym, 2, 0);
+    OLEDPrint(LocationName, 2, 2);
+    oled.update();
+    delay(2000);
+
+    // App and Starting...
+    oled.clear();
+    OLEDPrint(AppAcronym, 2, 0);
+    OLEDPrint("Starting..", 2, 2);
+    oled.update();
+    delay(500);
+  }
+} // InitialiseOLED
+
 void ConfigureBoard()
 {
 
@@ -345,17 +428,6 @@ void ConfigureBoard()
 
   // Initialize EEPROM
   InitializeEEPROM();
-
-    // Initialize OLED
-  if (OLED_Enabled == true)
-  {
-    oled.init();
-    oled.clear();
-    oled.setCursor(17, 0);
-    oled.setScale(5);
-    oled.print("IPEM");
-    oled.update();
-  }
 
 // Initialize ADC and EmonLib
 #if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE

@@ -15,7 +15,7 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   Base 90E32/36 register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
   VSCode base, E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, Comprehensive Functions, OTA and Domoticz Integration by Date Williams
 
-  **CONFIGURATION (Setup for bring-up testing of the board)**
+  CONFIGURATION (Setup for bring-up testing of the board)
 
   This version of firmware code is by default, configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
@@ -35,7 +35,7 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Board Location and Firmware Version to OLED and Serial Monitor
   * IP Address Defaults to DHCP.  Static IP Address Configuration in WiFi-OTA.h
 
-  **CALIBRATION (This should be minimal - based on the below)**
+  CALIBRATION (This should be minimal - based on the below)
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
@@ -47,7 +47,7 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * You can update board ATM Configurations in ATM90E3x.h
   * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
 
-  **WiFi and OTA Updates**
+  WiFi and OTA Updates
 
   * Setup WiFi
   * Setup Optional Static IP address and Gateway (DHCP or Static)
@@ -56,16 +56,21 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Display WiFI Signal Meter
   * Web Server Informatin Page and Push OTA Updater
 
-  **DOMOTICZ**
+  DOMOTICZ
 
   * Setup connection to Domoticz Home Automation
-  * Configure Required Values to Pubish to Domoticz Hardware Device Indexes
+  * Configure Required Values to Publish to Domoticz Hardware Device Indexes
   *
 
-  **MQTT**
+  MQTT
 
-  * Setup connection to MQTT Broker /  Home Automation
-  * Configure Required Values to Pubish to MQTT Broker
+  * Setup connection to MQTT Broker / Home Automation
+  * Configure Required Values to Publish to MQTT Broker
+
+  ThingSpeak
+
+  * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
+  * Configure Required Values to Publish to ThingSpeak
 
 
   Enjoy!  Dave Williams, DitroniX.net
