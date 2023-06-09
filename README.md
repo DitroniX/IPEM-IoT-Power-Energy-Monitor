@@ -15,15 +15,13 @@ The IPEM Kit
 
 **IPEM with Integrated Push OTA Example**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true)
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true) 
 
-Four fully tested versions of this board are planned. 
+Four fully tested versions of this board are available. Thye most popular being ESP32E (PCB Ant), plus ATM90E32.
 
 The board layout is designed to be a flexible dual purpose.
 - ESP32 WROOM, with Internal Antenna, or UF.L connector for external antenna
 - ATM90E32 or ATM90E36
-
-The initial production run will be for ATM90E32, both ESP32 variants.
 
 **CT Clamp Inputs**
 
@@ -117,7 +115,17 @@ board variants will have FOUR CT inputs.
  - **Size** 70 mm x 53 mm
 
 
-**Remember!**
+
+------------
+
+**In The Box**
+
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/04/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2303.202P-Sealed-1024x672.jpg?raw=true)
+
+External Antenna Version
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-ESP32UE-ATM90E32-IoT-Power-Energy-Monitor-In-the-Box-scaled.jpg?raw=true)
+
+
 
 Our SDKs are WeMos D1 Mini flashing compatible
 Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
