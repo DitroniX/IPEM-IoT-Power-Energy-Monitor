@@ -17,6 +17,9 @@ The IPEM Kit
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Home-Page.png?raw=true)
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/05/IPEM-Push-OTA-Web-Upload-Page.png?raw=true) 
 
+**IPEM Example Real-Time Output to ThingSpeak**
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/06/IPEM-ThingSpeak-Example.png?raw=true)
+
 Four fully tested versions of this board are available. Thye most popular being ESP32E (PCB Ant), plus ATM90E32.
 
 The board layout is designed to be a flexible dual purpose.
