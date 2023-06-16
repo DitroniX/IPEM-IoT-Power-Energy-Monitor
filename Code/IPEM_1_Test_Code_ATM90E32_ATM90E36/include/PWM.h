@@ -74,7 +74,7 @@ void InitialisePWM()
             Serial.println("PWM Output is Enabled from PWM Test Output");
 
         // Configuration Info
-        Serial.printf("PWM Maximum Power Limit:\t%d\n", PWM_MaximumPowerLimit);
+        Serial.printf("PWM Maximum Power Limit:\t%0f\n", PWM_MaximumPowerLimit);
         Serial.printf("PWM Resolution Bit:\t\t%d\n", PWM_ResolutionBit);
         Serial.printf("PWM Maximum Resolution:\t\t%d\n", PWM_MaximumResolution);
         Serial.printf("PWM Scaling Factor:\t\t%f\n\n", PWM_ScalingFactor);

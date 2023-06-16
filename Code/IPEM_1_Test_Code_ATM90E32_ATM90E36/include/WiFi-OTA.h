@@ -20,6 +20,18 @@
     * Display Web Information Page (Put IP in Browser)
     * Display Push OTA Page (Remote Uploading of BIN Files)
 
+   WebServer URL Commands.  An example is http://ipaddress/pwm-on  e.g. http:192.168.0.5/pwm-on
+   * /pwm-local - This is Enable PWM to take use Local Power reading from specified variable and output.
+   * /pwm-remote - This is Enable PWM to take use Remote Power reading from specified variable and output.
+   * /pwm-on - This is Enable PWM to take use Local Power reading from specified variable and output.
+   * /pwm-off - This is Turn Off PWM Output
+   * /pwm-test - This will turn on a test PWM Loop and output
+   * /dac-local - This is Enable DAC to take use Local Power reading from specified variable and output.
+   * /dac-remote - This is Enable DAC to take use Remote Power reading from specified variable and output.
+   * /dac-on - This is Enable DAC to take use Local Power reading from specified  variable and output.
+   * /dac-off - This is Turn Off DAC Output
+   * /dac-test - This will turn on a test DAC Loop and output
+
    To setup the Push OTA and Reflash The Board:
     * Once flashed, Open Web Page using IP Address in Web Browser (PC, Tablet, Phone).
     * Upload a BIN file. Compiled from PlatformIO. In Folder IPEM_1_Test_Code_ATM90E32_ATM90E36\.pio\build\wemos_d1_mini32\
@@ -41,10 +53,10 @@
 // WiFi.  Setup with your Wireless Information.  Add more as needed.
 const char *ssid1 = "";     // WiFi Network SSID - Case Sensitive
 const char *password1 = ""; // WiFi Network password - Case Sensitive
-const char *ssid2 = "";                    // WiFi Network SSID - Case Sensitive
-const char *password2 = "";                // WiFi Network password - Case Sensitive
-const char *ssid3 = "";                    // WiFi Network SSID - Case Sensitive
-const char *password3 = "";                // WiFi Network password - Case Sensitive
+const char *ssid2 = "";     // WiFi Network SSID - Case Sensitive
+const char *password2 = ""; // WiFi Network password - Case Sensitive
+const char *ssid3 = "";     // WiFi Network SSID - Case Sensitive
+const char *password3 = ""; // WiFi Network password - Case Sensitive
 
 // WiFi. Force Disable for Testing.  !!!!! BEWARE Outside of Local Developmet Do NOT Disable as OTA will NOT work !!!!!
 const boolean DisableWiFi = false; // Force Disable WiFi for Local USB Development and Testing Only.  You can leave SSID/IP etc populated.

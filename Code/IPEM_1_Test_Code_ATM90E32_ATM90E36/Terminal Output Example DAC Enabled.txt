@@ -35,7 +35,7 @@ EEPROM Check: 20        (Validation OK)
 PWM Output is Disabled
 
 DAC Output is Enabled from DACLocal
-DAC Maximum Power Limit:        0
+DAC Maximum Power Limit:        4000
 DAC Resolution Bit:             8
 DAC Maximum Resolution:         255
 DAC Scaling Factor:             0.000825

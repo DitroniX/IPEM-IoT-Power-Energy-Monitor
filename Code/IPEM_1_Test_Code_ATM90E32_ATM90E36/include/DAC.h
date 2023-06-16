@@ -80,7 +80,7 @@ void InitialiseDAC()
             Serial.println("DAC Output is Enabled from DAC Test Output");
 
         // Configuration Info
-        Serial.printf("DAC Maximum Power Limit:\t%d\n", DAC_MaximumPowerLimit);
+        Serial.printf("DAC Maximum Power Limit:\t%0f\n", DAC_MaximumPowerLimit);
         Serial.printf("DAC Resolution Bit:\t\t%d\n", DAC_ResolutionBit);
         Serial.printf("DAC Maximum Resolution:\t\t%d\n", DAC_MaximumResolution);
         Serial.printf("DAC Scaling Factor:\t\t%f\n\n", DAC_ScalingFactor);
@@ -159,7 +159,7 @@ void DAC_Power(float InputPower = 0)
 
 } // DAC_Power
 
-// Output DAC - Test Use Only
+// Output DAC - Test Use Only.  Modes 0 = Dynamic Output based on CT Power. 1 = SineWave.  2 =Fixed Test Voltage for Calibration etc. 
 void DAC_Test(int Test = 0, float DAC_Value = 0)
 {
     dacoutput.outputVoltage((float)0);

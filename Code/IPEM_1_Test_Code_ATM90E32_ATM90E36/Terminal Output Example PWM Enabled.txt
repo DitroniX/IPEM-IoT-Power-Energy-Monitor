@@ -33,7 +33,7 @@ ThingSpeak Publishing is Disabled
 EEPROM Check: 20        (Validation OK)
 
 PWM Output is Enabled from PWMLocal
-PWM Maximum Power Limit:        0
+PWM Maximum Power Limit:        4000
 PWM Resolution Bit:             14
 PWM Maximum Resolution:         16383
 PWM Scaling Factor:             0.244156

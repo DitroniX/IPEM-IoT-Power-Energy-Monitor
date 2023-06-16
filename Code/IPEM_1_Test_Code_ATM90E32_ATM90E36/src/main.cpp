@@ -83,7 +83,7 @@
 
   * PWM (On Default GPIO 17), which will track Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
-  * WebServer /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
+  * WebServer /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test.  See https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/WebServer-Commands 
   * Ability to Enable and Disable PWM Local Readings
   * Ability to Enable and Disable PWM Remote Readings
   * Ability to Enable and Disable PWM Test Mode
@@ -94,7 +94,7 @@
 
   * Fixed Voltage Output from DAC, tracking Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
-  * WebServer /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
+  * WebServer /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test.  See https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/WebServer-Commands
   * Ability to Enable and Disable DAC Local Readings
   * Ability to Enable and Disable DAC Remote Readings
   * Ability to Enable and Disable DAC Test Mode
