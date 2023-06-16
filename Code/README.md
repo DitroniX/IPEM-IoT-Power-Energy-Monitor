@@ -4,6 +4,8 @@
 
 This folder contains IPEM Example Source Code.
 
+The main develpment code is https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/tree/main/Code/IPEM_1_Test_Code_ATM90E32_ATM90E36
+
   Remember!
   - Set the BOARD to ESP32, 'WEMOS D1 MINI ESP32' DEV Module (or similar).
   - You may set the BAUD rate to 921600 to speed up flashing.
