@@ -105,7 +105,7 @@ void InitializeEEPROM()
   if (extEEPROM.read(0) != 0x20)
     ClearEEPROM();
 
-  Serial.print("EEPROM Check: ");
+  Serial.print("\nEEPROM Check: ");
   Serial.print(readEEPROM16(0x00), HEX);
 
   // EEPROM Validation

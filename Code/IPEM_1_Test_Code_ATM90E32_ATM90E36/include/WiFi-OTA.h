@@ -47,7 +47,7 @@ const char *ssid3 = "";                    // WiFi Network SSID - Case Sensitive
 const char *password3 = "";                // WiFi Network password - Case Sensitive
 
 // WiFi. Force Disable for Testing.  !!!!! BEWARE Outside of Local Developmet Do NOT Disable as OTA will NOT work !!!!!
-const boolean DisableWiFi = false; // Force Disable WiFi for Local USB Development and Testing Only
+const boolean DisableWiFi = false; // Force Disable WiFi for Local USB Development and Testing Only.  You can leave SSID/IP etc populated.
 
 // Set your Static IP address and Gateway - Alternatively leave at (0, 0, 0, 0)
 IPAddress local_IP(0, 0, 0, 0);     // Leave at (0, 0, 0, 0) if DHCP required
@@ -305,6 +305,97 @@ void InitialiseWebServer()
         Serial.println("Initialise WebServer");
 
         WebServerPageContent();
+
+        // Web Server Listener
+        server.on("/pwm-local", []() // Use Local CT Clamp to Derive PWM
+                  { 
+            Serial.println("Receiving Message: PWM Turn On\n"); 
+            PWM_Write(0); // Turn Output Off
+            EnablePWMLocal = true;
+            EnablePWMRemote = false;
+            EnablePWMTestOutput = false;   
+            delay(100); WebServerRoot(); });
+
+        server.on("/pwm-on", []() // Use Local CT Clamp to Derive PWM
+                  { 
+            Serial.println("Receiving Message: PWM Turn On\n"); 
+            PWM_Write(0); // Turn Output Off
+            EnablePWMLocal = true;
+            EnablePWMRemote = false;
+            EnablePWMTestOutput = false;   
+            delay(100); WebServerRoot(); });
+
+        server.on("/pwm-remote", []() // Use Remote Value to Derive PWM
+                  { 
+            Serial.println("Receiving Message: PWM Turn On Remote Power\n"); 
+            PWM_Write(0); // Turn Output Off
+            EnablePWMLocal = false;
+            EnablePWMRemote = true;
+            EnablePWMTestOutput = false;   
+            delay(100); WebServerRoot(); });
+
+        server.on("/pwm-off", []() // Zero and then Disable PWM Output
+                  { 
+            Serial.println("Receiving Message: PWM Turn Off\n"); 
+            PWM_Write(0); // Turn Output Off
+            EnablePWMLocal = false;
+            EnablePWMRemote = false;
+            EnablePWMTestOutput = false;   
+            delay(100); WebServerRoot(); });
+
+        server.on("/pwm-test", []() // Use to Enable PWM Test Output
+                  { 
+            Serial.println("Receiving Message: PWM Turn Off\n"); 
+            PWM_Write(0); // Turn Output Off
+            EnablePWMLocal = false;
+            EnablePWMRemote = false;
+            EnablePWMTestOutput = true;            
+            delay(100); WebServerRoot(); });
+
+        server.on("/dac-local", []() // Use Local CT Clamp to Derive DAC Output Voltage
+                  { 
+            Serial.println("Receiving Message: DAC Turn On\n"); 
+            DAC_WriteVoltage(0); // Turn Output Off
+            EnableDACLocal = true;
+            EnableDACRemote = false;
+            EnableDACTestOutput = false;
+            delay(100); WebServerRoot(); });
+
+        server.on("/dac-on", []() // Use Local CT Clamp to Derive DAC Output Voltage
+                  { 
+            Serial.println("Receiving Message: DAC Turn On\n"); 
+            DAC_WriteVoltage(0); // Turn Output Off
+            EnableDACLocal = true;
+            EnableDACRemote = false;
+            EnableDACTestOutput = false;
+            delay(100); WebServerRoot(); });
+
+        server.on("/dac-remote", []() // Use Remote Value to Derive DAC Output Voltage
+                  { 
+            Serial.println("Receiving Message: DAC Turn On Remote Power\n"); 
+            DAC_WriteVoltage(0); // Turn Output Off
+            EnableDACLocal = false;
+            EnableDACRemote = true;
+            EnableDACTestOutput = false;
+            delay(100); WebServerRoot(); });
+
+        server.on("/dac-test", []() // Use to Enable DAC Test Output
+                  { 
+            Serial.println("Receiving Message: DAC Turn On Remote Power\n"); 
+            DAC_WriteVoltage(0); // Turn Output Off
+            EnableDACLocal = false;
+            EnableDACRemote = false;
+            EnableDACTestOutput = true;
+            delay(100); WebServerRoot(); });
+
+        server.on("/dac-off", []() // Zero and then Disable DAC Output Voltage
+                  { 
+            Serial.println("Receiving Message: DAC Turn Off\n"); 
+            DAC_WriteVoltage(0);  // Turn Output Off
+            EnableDACLocal = false;
+            EnableDACRemote = false;
+            EnableDACTestOutput = false;
+            delay(100); WebServerRoot(); });
 
         // Display Web Page Upon Client Request
         server.on("", WebServerRoot);

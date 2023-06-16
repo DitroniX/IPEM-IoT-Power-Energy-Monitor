@@ -219,7 +219,7 @@ bool ATM90E3x::calibrationError()
     CS0 = false;
   }
 
-  if (systemstatus0 & 0x0100)
+  if (systemstatus0 & 0x1000) // DW Updated 15th June 23, thanks to AM for highlighing this possible typo in TD code.
   {
     CS1 = true;
   }

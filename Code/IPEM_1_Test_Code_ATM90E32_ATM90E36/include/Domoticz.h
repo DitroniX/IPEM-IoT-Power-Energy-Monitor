@@ -15,15 +15,15 @@
 // Domoticz Server info.  Setup with your Domoticz IP and Port
 const char *DomoticzServer = "0.0.0.0"; // Domoticz Server IP Address (Typically a Fixed Local Address)
 int DomoticzPort = 8080;                // Domoticz Network Port (Default 8080)
-const char *Domoticz_User = "";         // Domoticz User - if applicable
-const char *Domoticz_Password = "";     // Domoticz Password - if applicable
+const char *Domoticz_User = "";         // Domoticz User - if applicable  (Not currently implimented in the connection)
+const char *Domoticz_Password = "";     // Domoticz Password - if applicable  (Not currently implimented in the connection)
 
 // Enable Publishing
-boolean EnableDomoticz = false; // Change to true, to enable Loop reading and sending data to Domoticz.  Default false.
+boolean EnableDomoticz = true; // Change to true, to enable Loop reading and sending data to Domoticz.  Default false.
 
 // Domoticz Hardware Device Indexes
 
-// Set these values to the Domoticz Devices Indexes (IDX).  If Zero, then entry is ignored. Device needs to be created in Domoticz.
+// Set these values to the Domoticz Devices Indexes (IDX).  If Zero, then entry is ignored. A device first needs to be created in Domoticz, then use related IDX here.
 int idxLineVoltage1 = 0;       // LineVoltage1 - Urms - Line 1 Voltage RMS
 int idxLineVoltage2 = 0;       // LineVoltage2 - Urms - Line 2 Voltage RMS
 int idxLineVoltage3 = 0;       // LineVoltage3 - Urms - Line 3 Voltage RMS
@@ -89,6 +89,16 @@ int idxLineFrequency = 0;   // LineFrequency - Line Voltage Frequency
 int idxDCVoltage = 0;      // PCB DC Input (Derived from AC)
 int idxPCBTemperature = 0; // PCB NTC °C
 
+int idxEnablePWMLocal = 120;     // PWM Output Local (Turn Switch On/Off)
+int idxEnablePWMRemote = 0;    // PWM Output Remote (Turn Switch On/Off)
+int idxPWMPowerOutput = 0;     // PWM Last Factored Power
+int idxPWMPowerPercentage = 0; // PWM Percentage
+
+int idxEnableDACLocal = 124;     // DAC Output Local (Turn Switch On/Off)
+int idxEnableDACRemote = 0;    // DAC Output Remote (Turn Switch On/Off)
+int idxDACPowerOutput = 0;     // DAC Last Factored Power
+int idxDACPowerPercentage = 0; // DAC Percentage
+
 // Set this value to the Domoticz Device Group Index (IDX) - Note: Currently Unused Virtual Device.
 int idxDomoticzBase = 0; // If Zero, then entry is ignored.  Group device needs to be created in Domoticz. WIP.
 
@@ -107,8 +117,8 @@ void DomoticzIntegration()
     }
 } // DomoticzIntegration
 
-// Publish to Domoticz - Single Values
-void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = "")
+// Publish to Domoticz - Single String Values
+void PublishDomoticzString(int Sensor_Index, float Sensor_Value, String Sensor_Name = "")
 {
 
     if (Sensor_Index > 0)
@@ -169,248 +179,340 @@ void PublishDomoticz(int Sensor_Index, float Sensor_Value, String Sensor_Name = 
     }
 } // PublishDomoticz
 
+// Publish to Domoticz - Single Numeric Values
+void PublishDomoticzNumeric(int Sensor_Index, float Sensor_Value, String Sensor_Name = "")
+{
+
+    if (Sensor_Index > 0)
+    {
+        if (wlan_client.connect(DomoticzServer, DomoticzPort))
+        {
+            // Green LED
+            digitalWrite(LED_Green, LOW);
+
+            Serial.print("Sending Message to Domoticz #");
+            Serial.print(Sensor_Index);
+            Serial.print(" ");
+            Serial.print(Sensor_Value);
+            Serial.print(" \t");
+            Serial.println(Sensor_Name);
+
+            wlan_client.print("GET /json.htm?type=command&param=udevice&idx=");
+            wlan_client.print(Sensor_Index);
+
+            wlan_client.print("&nvalue=");
+            wlan_client.print(Sensor_Value);
+
+            wlan_client.println(" HTTP/1.1");
+            wlan_client.print("Host: ");
+            wlan_client.print(DomoticzServer);
+            wlan_client.print(":");
+
+            wlan_client.println(DomoticzPort);
+            wlan_client.println("User-Agent: Arduino-ethernet");
+            wlan_client.println("Connection: close");
+            wlan_client.println();
+
+            wlan_client.stop();
+
+            // Green LED
+            digitalWrite(LED_Green, HIGH);
+        }
+        else
+        {
+            // Red LED
+            digitalWrite(LED_Red, LOW);
+
+            Serial.println("WiFi or Domoticz Server Not Connected");
+
+            // Update OLED
+            oled.clear();
+            OLEDPrint("Error", 2, 0);
+            OLEDPrint("Domoticz", 2, 2);
+            oled.update();
+            delay(1000);
+
+            // Red LED
+            digitalWrite(LED_Red, HIGH);
+
+            // Stabalise for slow Access Points
+            InitialiseWiFi();
+        }
+    }
+} // PublishDomoticzNumeric
+
 // Publish to Domoticz - Listed Values
 void PublishDomoticzValues()
 {
 
-    if (WiFi.status() == WL_CONNECTED)
+    if (wlan_client.connect(DomoticzServer, DomoticzPort))
     {
 
         // Voltage LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
         if (idxLineVoltage1 > 0)
         {
-            PublishDomoticz(idxLineVoltage1, LineVoltage1, "LineVoltage1");
+            PublishDomoticzString(idxLineVoltage1, LineVoltage1, "LineVoltage1");
         }
 
         if (idxLineVoltage2 > 0)
         {
-            PublishDomoticz(idxLineVoltage2, LineVoltage2, "LineVoltage2");
+            PublishDomoticzString(idxLineVoltage2, LineVoltage2, "LineVoltage2");
         }
 
         if (idxLineVoltage3 > 0)
         {
-            PublishDomoticz(idxLineVoltage3, LineVoltage3, "LineVoltage3");
+            PublishDomoticzString(idxLineVoltage3, LineVoltage3, "LineVoltage3");
         }
 
         if (idxLineVoltageTotal > 0)
         {
-            PublishDomoticz(idxLineVoltageTotal, LineVoltageTotal, "LineVoltageTotal");
+            PublishDomoticzString(idxLineVoltageTotal, LineVoltageTotal, "LineVoltageTotal");
         }
 
         if (idxLineVoltageAverage > 0)
         {
-            PublishDomoticz(idxLineVoltageAverage, LineVoltageAverage, "LineVoltageAverage");
+            PublishDomoticzString(idxLineVoltageAverage, LineVoltageAverage, "LineVoltageAverage");
         }
 
         // Current LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
         if (idxLineCurrentCT1 > 0)
         {
-            PublishDomoticz(idxLineCurrentCT1, LineCurrentCT1, "LineCurrentCT1");
+            PublishDomoticzString(idxLineCurrentCT1, LineCurrentCT1, "LineCurrentCT1");
         }
 
         if (idxLineCurrentCT2 > 0)
         {
-            PublishDomoticz(idxLineCurrentCT2, LineCurrentCT2, "LineCurrentCT2");
+            PublishDomoticzString(idxLineCurrentCT2, LineCurrentCT2, "LineCurrentCT2");
         }
 
         if (idxLineCurrentCT3 > 0)
         {
-            PublishDomoticz(idxLineCurrentCT3, LineCurrentCT3, "LineCurrentCT3");
+            PublishDomoticzString(idxLineCurrentCT3, LineCurrentCT3, "LineCurrentCT3");
         }
         if (idxLineCurrentCT4 > 0)
         {
-            PublishDomoticz(idxLineCurrentCT4, LineCurrentCT4, "LineCurrentCT4");
+            PublishDomoticzString(idxLineCurrentCT4, LineCurrentCT4, "LineCurrentCT4");
         }
         if (idxLineCurrentCTN > 0)
         {
-            PublishDomoticz(idxLineCurrentCTN, LineCurrentCTN, "LineCurrentCTN");
+            PublishDomoticzString(idxLineCurrentCTN, LineCurrentCTN, "LineCurrentCTN");
         }
         if (idxLineCurrentTotal > 0)
         {
-            PublishDomoticz(idxLineCurrentTotal, LineCurrentTotal, "LineCurrentTotal");
+            PublishDomoticzString(idxLineCurrentTotal, LineCurrentTotal, "LineCurrentTotal");
         }
 
         // Calculated Power CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedTotalPower
         if (idxCalculatedPowerCT1 > 0)
         {
-            PublishDomoticz(idxCalculatedPowerCT1, CalculatedPowerCT1, "CalculatedPowerCT1");
+            PublishDomoticzString(idxCalculatedPowerCT1, CalculatedPowerCT1, "CalculatedPowerCT1");
         }
         if (idxCalculatedPowerCT2 > 0)
         {
-            PublishDomoticz(idxCalculatedPowerCT2, CalculatedPowerCT2, "CalculatedPowerCT2");
+            PublishDomoticzString(idxCalculatedPowerCT2, CalculatedPowerCT2, "CalculatedPowerCT2");
         }
         if (idxCalculatedPowerCT3 > 0)
         {
-            PublishDomoticz(idxCalculatedPowerCT3, CalculatedPowerCT3, "CalculatedPowerCT3");
+            PublishDomoticzString(idxCalculatedPowerCT3, CalculatedPowerCT3, "CalculatedPowerCT3");
         }
         if (idxCalculatedPowerCT4 > 0)
         {
-            PublishDomoticz(idxCalculatedPowerCT4, CalculatedPowerCT4, "CalculatedPowerCT4");
+            PublishDomoticzString(idxCalculatedPowerCT4, CalculatedPowerCT4, "CalculatedPowerCT4");
         }
         if (idxCalculatedTotalPower > 0)
         {
-            PublishDomoticz(idxCalculatedTotalPower, CalculatedTotalPower, "CalculatedTotalPower");
+            PublishDomoticzString(idxCalculatedTotalPower, CalculatedTotalPower, "CalculatedTotalPower");
         }
 
         // Active Power ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower
         if (idxActivePowerCT1 > 0)
         {
-            PublishDomoticz(idxActivePowerCT1, ActivePowerCT1, "ActivePowerCT1");
+            PublishDomoticzString(idxActivePowerCT1, ActivePowerCT1, "ActivePowerCT1");
         }
         if (idxActivePowerCT2 > 0)
         {
-            PublishDomoticz(idxActivePowerCT2, ActivePowerCT2, "ActivePowerCT2");
+            PublishDomoticzString(idxActivePowerCT2, ActivePowerCT2, "ActivePowerCT2");
         }
         if (idxActivePowerCT3 > 0)
         {
-            PublishDomoticz(idxActivePowerCT3, ActivePowerCT3, "ActivePowerCT3");
+            PublishDomoticzString(idxActivePowerCT3, ActivePowerCT3, "ActivePowerCT3");
         }
         if (idxTotalActivePower > 0)
         {
-            PublishDomoticz(idxTotalActivePower, TotalActivePower, "TotalActivePower");
+            PublishDomoticzString(idxTotalActivePower, TotalActivePower, "TotalActivePower");
         }
         if (idxCalculatedTotalActivePower > 0)
         {
-            PublishDomoticz(idxCalculatedTotalActivePower, CalculatedTotalActivePower, "CalculatedTotalActivePower");
+            PublishDomoticzString(idxCalculatedTotalActivePower, CalculatedTotalActivePower, "CalculatedTotalActivePower");
         }
 
         // Active Power Import ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
         if (idxActivePowerImportCT1 > 0)
         {
-            PublishDomoticz(idxActivePowerImportCT1, ActivePowerImportCT1, "ActivePowerImportCT1");
+            PublishDomoticzString(idxActivePowerImportCT1, ActivePowerImportCT1, "ActivePowerImportCT1");
         }
         if (idxActivePowerImportCT2 > 0)
         {
-            PublishDomoticz(idxActivePowerImportCT2, ActivePowerImportCT2, "ActivePowerImportCT2");
+            PublishDomoticzString(idxActivePowerImportCT2, ActivePowerImportCT2, "ActivePowerImportCT2");
         }
         if (idxActivePowerImportCT3 > 0)
         {
-            PublishDomoticz(idxActivePowerImportCT3, ActivePowerImportCT3, "ActivePowerImportCT3");
+            PublishDomoticzString(idxActivePowerImportCT3, ActivePowerImportCT3, "ActivePowerImportCT3");
         }
         if (idxTotalActivePowerImport > 0)
         {
-            PublishDomoticz(idxTotalActivePowerImport, TotalActivePowerImport, "TotalActivePowerImport");
+            PublishDomoticzString(idxTotalActivePowerImport, TotalActivePowerImport, "TotalActivePowerImport");
         }
 
         // Active Power Export ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
         if (idxActivePowerExportCT1 > 0)
         {
-            PublishDomoticz(idxActivePowerExportCT1, ActivePowerExportCT1, "ActivePowerExportCT1");
+            PublishDomoticzString(idxActivePowerExportCT1, ActivePowerExportCT1, "ActivePowerExportCT1");
         }
         if (idxActivePowerExportCT2 > 0)
         {
-            PublishDomoticz(idxActivePowerExportCT2, ActivePowerExportCT2, "ActivePowerExportCT2");
+            PublishDomoticzString(idxActivePowerExportCT2, ActivePowerExportCT2, "ActivePowerExportCT2");
         }
         if (idxActivePowerExportCT3 > 0)
         {
-            PublishDomoticz(idxActivePowerExportCT3, ActivePowerExportCT3, "ActivePowerExportCT3");
+            PublishDomoticzString(idxActivePowerExportCT3, ActivePowerExportCT3, "ActivePowerExportCT3");
         }
         if (idxTotalActivePowerExport > 0)
         {
-            PublishDomoticz(idxTotalActivePowerExport, TotalActivePowerExport, "TotalActivePowerExport");
+            PublishDomoticzString(idxTotalActivePowerExport, TotalActivePowerExport, "TotalActivePowerExport");
         }
 
         // Reactive Power ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower
         if (idxReactivePowerCT1 > 0)
         {
-            PublishDomoticz(idxReactivePowerCT1, ReactivePowerCT1, "ReactivePowerCT1");
+            PublishDomoticzString(idxReactivePowerCT1, ReactivePowerCT1, "ReactivePowerCT1");
         }
         if (idxReactivePowerCT2 > 0)
         {
-            PublishDomoticz(idxReactivePowerCT2, ReactivePowerCT2, "ReactivePowerCT2");
+            PublishDomoticzString(idxReactivePowerCT2, ReactivePowerCT2, "ReactivePowerCT2");
         }
         if (idxReactivePowerCT3 > 0)
         {
-            PublishDomoticz(idxReactivePowerCT3, ReactivePowerCT3, "ReactivePowerCT3");
+            PublishDomoticzString(idxReactivePowerCT3, ReactivePowerCT3, "ReactivePowerCT3");
         }
         if (idxTotalReactivePower > 0)
         {
-            PublishDomoticz(idxTotalReactivePower, TotalReactivePower, "TotalReactivePower");
+            PublishDomoticzString(idxTotalReactivePower, TotalReactivePower, "TotalReactivePower");
         }
         if (idxCalculatedTotalReactivePower > 0)
         {
-            PublishDomoticz(idxCalculatedTotalReactivePower, CalculatedTotalReactivePower, "CalculatedTotalReactivePower");
+            PublishDomoticzString(idxCalculatedTotalReactivePower, CalculatedTotalReactivePower, "CalculatedTotalReactivePower");
         }
 
         // Apparent Popwer ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower
         if (idxApparentPowerCT1 > 0)
         {
-            PublishDomoticz(idxApparentPowerCT1, ApparentPowerCT1, "ApparentPowerCT1");
+            PublishDomoticzString(idxApparentPowerCT1, ApparentPowerCT1, "ApparentPowerCT1");
         }
         if (idxApparentPowerCT2 > 0)
         {
-            PublishDomoticz(idxApparentPowerCT2, ApparentPowerCT2, "ApparentPowerCT2");
+            PublishDomoticzString(idxApparentPowerCT2, ApparentPowerCT2, "ApparentPowerCT2");
         }
         if (idxApparentPowerCT3 > 0)
         {
-            PublishDomoticz(idxApparentPowerCT3, ApparentPowerCT3, "ApparentPowerCT3");
+            PublishDomoticzString(idxApparentPowerCT3, ApparentPowerCT3, "ApparentPowerCT3");
         }
         if (idxTotalApparentPower > 0)
         {
-            PublishDomoticz(idxTotalApparentPower, TotalApparentPower, "TotalApparentPower");
+            PublishDomoticzString(idxTotalApparentPower, TotalApparentPower, "TotalApparentPower");
         }
         if (idxCalculatedTotalApparentPower > 0)
         {
-            PublishDomoticz(idxCalculatedTotalApparentPower, CalculatedTotalApparentPower, "CalculatedTotalApparentPower");
+            PublishDomoticzString(idxCalculatedTotalApparentPower, CalculatedTotalApparentPower, "CalculatedTotalApparentPower");
         }
 
         // ActivePower TotalActiveFundPower, TotalActiveHarPower
         if (idxTotalActiveFundPower > 0)
         {
-            PublishDomoticz(idxTotalActiveFundPower, TotalActiveFundPower, "TotalActiveFundPower");
+            PublishDomoticzString(idxTotalActiveFundPower, TotalActiveFundPower, "TotalActiveFundPower");
         }
         if (idxTotalActiveHarPower > 0)
         {
-            PublishDomoticz(idxTotalActiveHarPower, TotalActiveHarPower, "TotalActiveHarPower");
+            PublishDomoticzString(idxTotalActiveHarPower, TotalActiveHarPower, "TotalActiveHarPower");
         }
 
         // Power Factor PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
         if (idxPowerFactorCT1 > 0)
         {
-            PublishDomoticz(idxPowerFactorCT1, PowerFactorCT1, "PowerFactorCT1");
+            PublishDomoticzString(idxPowerFactorCT1, PowerFactorCT1, "PowerFactorCT1");
         }
         if (idxPowerFactorCT2 > 0)
         {
-            PublishDomoticz(idxPowerFactorCT2, PowerFactorCT2, "PowerFactorCT2");
+            PublishDomoticzString(idxPowerFactorCT2, PowerFactorCT2, "PowerFactorCT2");
         }
         if (idxPowerFactorCT3 > 0)
         {
-            PublishDomoticz(idxPowerFactorCT3, PowerFactorCT3, "PowerFactorCT3");
+            PublishDomoticzString(idxPowerFactorCT3, PowerFactorCT3, "PowerFactorCT3");
         }
         if (idxTotalPowerFactor > 0)
         {
-            PublishDomoticz(idxTotalPowerFactor, TotalPowerFactor, "TotalPowerFactor");
+            PublishDomoticzString(idxTotalPowerFactor, TotalPowerFactor, "TotalPowerFactor");
         }
 
         // Phase Angle PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
         if (idxPhaseAngleCT1 > 0)
         {
-            PublishDomoticz(idxPhaseAngleCT1, PhaseAngleCT1, "PhaseAngleCT1");
+            PublishDomoticzString(idxPhaseAngleCT1, PhaseAngleCT1, "PhaseAngleCT1");
         }
         if (idxPhaseAngleCT2 > 0)
         {
-            PublishDomoticz(idxPhaseAngleCT2, PhaseAngleCT2, "PhaseAngleCT2");
+            PublishDomoticzString(idxPhaseAngleCT2, PhaseAngleCT2, "PhaseAngleCT2");
         }
         if (idxPhaseAngleCT3 > 0)
         {
-            PublishDomoticz(idxPhaseAngleCT3, PhaseAngleCT3, "PhaseAngleCT3");
+            PublishDomoticzString(idxPhaseAngleCT3, PhaseAngleCT3, "PhaseAngleCT3");
         }
         // Other ChipTemperature, LineFrequency, DCVoltage, PCBTemperature
         if (idxChipTemperature > 0)
         {
-            PublishDomoticz(idxChipTemperature, ChipTemperature, "ChipTemperature");
+            PublishDomoticzString(idxChipTemperature, ChipTemperature, "ChipTemperature");
         }
         if (idxLineFrequency > 0)
         {
-            PublishDomoticz(idxLineFrequency, LineFrequency, "PhaLineFrequencyseAngleC");
+            PublishDomoticzString(idxLineFrequency, LineFrequency, "PhaLineFrequencyseAngleC");
         }
         if (idxDCVoltage > 0)
         {
-            PublishDomoticz(idxDCVoltage, DCVoltage, "DCVoltage");
+            PublishDomoticzString(idxDCVoltage, DCVoltage, "DCVoltage");
         }
         if (idxPCBTemperature > 0)
         {
-            PublishDomoticz(idxPCBTemperature, PCBTemperature, "PCBTemperature");
+            PublishDomoticzString(idxPCBTemperature, PCBTemperature, "PCBTemperature");
+        }
+
+        // Switch States
+        if (idxEnablePWMLocal > 0)
+        {
+            PublishDomoticzNumeric(idxEnablePWMLocal, EnablePWMLocal, "EnablePWMLocal");
+        }
+        if (idxEnableDACLocal > 0)
+        {
+            PublishDomoticzNumeric(idxEnableDACLocal, EnableDACLocal, "EnableDACLocal");
+        }
+
+        // PWM
+        if (idxPWMPowerOutput > 0)
+        {
+            PublishDomoticzString(idxPWMPowerOutput, PWMPowerOutput, "PWMPowerOutput");
+        }
+        if (idxPWMPowerPercentage > 0)
+        {
+            PublishDomoticzString(idxPWMPowerPercentage, PWMPowerPercentage, "PWMPowerPercentage");
+        }
+
+        // DAC
+        if (idxDACPowerOutput > 0)
+        {
+            PublishDomoticzString(idxDACPowerOutput, DACPowerOutput, "DACPowerOutput");
+        }
+        if (idxDACPowerPercentage > 0)
+        {
+            PublishDomoticzString(idxDACPowerPercentage, DACPowerPercentage, "DACPowerPercentage");
         }
 
         // NTP Time
@@ -419,6 +521,22 @@ void PublishDomoticzValues()
     }
     else
     {
+        // Red LED
+        digitalWrite(LED_Red, LOW);
+
+        Serial.println("WiFi or Domoticz Server Not Connected");
+
+        // Update OLED
+        oled.clear();
+        OLEDPrint("Error", 2, 0);
+        OLEDPrint("Domoticz", 2, 2);
+        oled.update();
+        delay(1000);
+
+        // Red LED
+        digitalWrite(LED_Red, HIGH);
+
+        // Stabalise for slow Access Points
         InitialiseWiFi();
     }
 } // PublishDomoticzValues
@@ -461,6 +579,28 @@ void PublishDomoticzATM(int Sensor_Index)
             // wlan_client.print(";0;");
             // wlan_client.print(String(PCBTemperature));
             // wlan_client.print(";0");
+
+            /* Examples of Available Variables
+            LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
+            LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
+            CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower
+            ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower
+            ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
+            ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
+            ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower
+            ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower
+            TotalActiveFundPower, TotalActiveHarPower
+            PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
+            PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
+            ChipTemperature, LineFrequency
+            DCVoltage, PCBTemperature
+            PWMLocalPower, PWMRemotePower, PWMPowerOutput, PWMPowerPercentage
+            DACLocalPower, DACRemotePower, DACPowerPercentage, DACPowerOutput
+
+            *Control
+            EnablePWMLocal, EnablePWMRemote, EnablePWMTestOutput
+            EnableDACLocal, EnableDACRemote, EnableDACTestOutput
+            */
 
             wlan_client.println(" HTTP/1.1");
             wlan_client.print("Host: ");

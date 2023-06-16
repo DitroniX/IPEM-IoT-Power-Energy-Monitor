@@ -21,7 +21,8 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
   * CT4 Input - Enabled (CT4_ENABLED true)
-  * CT4 Isolated from all Formulas - Disabled (CT4_ISOLATED false)
+  * PWM Output on Default GPIO Port GP17 (EnablePWMLocal false EnablePWMRemote false EnablePWMTestOutput false)
+  * DAC Output. Port TBD (EnableDACLocal false EnableDACRemote false EnableDACTestOutput false)
   * Multi-Voltage Input (ATM_SINGLEVOLTAGE true)
   * Split-Phase USA - Disabled (ATM_SPLITPHASE false)
   * Hardware Test - Enabled (DisableHardwareTest false)
@@ -50,17 +51,21 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   WiFi and OTA Updates
 
   * Setup WiFi
+  * Configure Multi-WiFi SSID/PWD
   * Setup Optional Static IP address and Gateway (DHCP or Static)
-  * Setup Hostname
+  * Setup Preferred Hostname
   * Setup Serial Device over IP (Used for OTA)
   * Display WiFI Signal Meter
-  * Web Server Informatin Page and Push OTA Updater
+  * Web Server Information Page and Push OTA Updater
+  * Web Listner
+  * PWM Switches added: /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
+  * DAC Switches added: /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
+  * Seperate switches dac-remote and pwm-remote, allow you to remotely send a fixed value to pwm / dac output.  Ideal for scenes etc.  Remote turns off or over-rides CT for pwm/dac.
 
   DOMOTICZ
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Publish to Domoticz Hardware Device Indexes
-  *
 
   MQTT
 
@@ -72,6 +77,28 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
   * Configure Required Values to Publish to ThingSpeak
 
+  PWM Duty Cycle Output
+
+  * PWM (On Default GPIO 17), which will track Power Useage (from Default Variable ActivePowerExportCT1)
+  * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
+  * WebServer /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
+  * Ability to Enable and Disable PWM Local Readings
+  * Ability to Enable and Disable PWM Remote Readings
+  * Ability to Enable and Disable PWM Test Mode
+  * Abilty to Set Fixed Power from Remote Value, or Leave to Dynamic CT Power Values (WIP)
+  * Continuous PWM Cycle Test Mode Loop
+
+  DAC Voltage Output
+
+  * Fixed Voltage Output from DAC, tracking Power Useage (from Default Variable ActivePowerExportCT1)
+  * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
+  * WebServer /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
+  * Ability to Enable and Disable DAC Local Readings
+  * Ability to Enable and Disable DAC Remote Readings
+  * Ability to Enable and Disable DAC Test Mode
+  * Abilty to Set Fixed DAC Output from Remote Value, or Leave to Dynamic CT Power Values (WIP)
+  * DAC Sinewave Test Mode Loop (Default 10 Hz)
+  * DAC Stepped Voltages Test Mode Loop (Slow Staircase)
 
   Enjoy!  Dave Williams, DitroniX.net
 

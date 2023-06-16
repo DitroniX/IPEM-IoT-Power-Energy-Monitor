@@ -1,4 +1,4 @@
-Below are EXAMPLE Configuration Outputs
+**Below are EXAMPLE Configuration Outputs**
 
 Hardware Configuration for ATM90E32
 -----------------------------------

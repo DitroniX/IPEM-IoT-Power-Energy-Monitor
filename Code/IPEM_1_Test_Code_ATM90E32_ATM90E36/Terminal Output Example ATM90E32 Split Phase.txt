@@ -1,0 +1,145 @@
+Std Prod PCA Bring Up.  Jumpers set.  AC In. Resistive Load.  Split Phase 1+3 (Note Tested in UK with 240V per phase)
+------------------------------------------------------------------------------------------------------------------------
+
+Settings:
+
+// **************** DEFINE VOLTAGE REFERENCE ****************
+#define ATM_SINGLEVOLTAGE false // Set to true to use V1/ATM_V1P for VoltageGain1, VoltageGain2, VoltageGain3 and Calcfulations for CT1, CT2, CT3, CT4, CTN.  (Default true)
+
+// **************** DEFINE PHASE TYPE ****************
+#define ATM_SPLITPHASE true // If Split Phase (i.e. USA 120+120), set to true else leave false (NB. Not fully tested). ATM_SINGLEVOLTAGE = false
+
+------------------------------------------------------------------------------------------------------------------------
+
+DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code
+
+Initialise OLED (If Plugged In)
+
+Register Status and Startup Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616
+Board Location: House
+
+Software Optons
+----------------
+Wi-Fi is Disabled
+Domoticz Publishing is Disabled
+MQTT Publishing is Disabled
+ThingSpeak Publishing is Disabled
+
+EEPROM Check: 20        (Validation OK)
+
+PWM Output is Disabled
+
+DAC Output is Disabled
+
+Peripherals Test
+-----------------
+Testing RGB LED
+Scanning I2C Bus for Devices ...
+ * I2C device found at address Decimal 60 = Hex 0x3C OLED
+ * I2C device found at address Decimal 80 = Hex 0x50 EEPROM
+ * I2C Bus Scan Complete
+
+AC/DC Voltage Input Detected
+Connecting to the ATM90E32
+ATM90E32 Connected - OK
+IPEM Hardware Setup and Power-Up Test - Board Initialized
+
+Register Status and Diagnostic Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616   Location: House
+
+Hardware Configuration for ATM90E32
+------------------------------------
+AC Voltage Inputs:      Multi Dual V1 and V3 - USA Configuration
+Split AC Voltage:       Dual Input V1 and V3 Enabled - USA Configuration
+CT Current Clamps:      Phase Configured for 1 and 3 + 1 Phase (ESP32)
+CT4 Current Input:      Configured for ESP32 ADC
+
+[Status Values]
+System Status:          S0:0x37E                S1:0xFFFE
+Meter Status:           E0:0x20F                E1:0xFF
+
+Mains RMS Voltage
+------------------
+Voltage 1: 248.38 V
+Voltage 3: 248.04 V
+- - - - - - - - - - - - - - - - - - - - - 
+Total Split Voltage: 248.21 V (V1~X~V3)
+
+Mains RMS Current
+------------------
+Current CT1: 0.66 A
+Current CT3: 0.65 A
+Actual Total Current: 1.31 A (CT1~X~CT3)
+
+Calculated RMS Power
+---------------------
+Power V1*I1: 163.93 W
+Power V2*I2: 0.00 W
+Power V3*I3: 161.23 W
+- - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Power: 325.16 W (CT1~X~CT3)
+
+Active Power (Absorbed or Used by the Load)
+--------------------------------------------
+Active Power CT1: -162.96 W     (Export)
+Active Power CT2: 0.00 W
+Active Power CT3: -161.95 W     (Export)
+- - - - - - - - - - - - - - - - - - - - -
+Total Active Power: -324.91 W   (Export)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Calculated Total Active Power: -324.91 W (CT1~CT2~CT3)
+
+
+Re-Active Power
+----------------
+ReActive Power CT1: -10.07 VAR
+ReActive Power CT2: 0.00 VAR
+ReActive Power CT3: -9.77 VAR
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Total ReActive Power: -19.83 VAR (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Reactive Power: -19.84 W (CT1~CT2~CT3)
+
+Apparent Power (Total Amount of Power Flowing from Source to Load)
+-------------------------------------------------------------------
+Apparent Power CT1: 163.32 VA
+Apparent Power CT2: 0.45 VA
+Apparent Power CT3: 162.27 VA
+- - - - - - - - - - - - - - - - - - - - - - - -
+Total Apparent Power: 325.62 VA (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Apparent Power: 326.04 W (CT1~CT2~CT3)
+
+
+Other Power Information
+------------------------
+Total Fundamental Power: -324.36 pH(t)
+
+Total Harmonic Power: -0.55
+
+Power Factor
+-------------
+Power Factor CT1: 0.00 PF
+Power Factor CT2: 0.00 PF
+Power Factor CT3: 0.00 PF
+- - - - - - - - - - - - - - -
+Total Power Factor: 0.00 PF
+
+Phase Angle
+------------
+Phase Angle CT1: 0.00
+Phase Angle CT2: 0.00
+Phase Angle CT3: 0.00
+
+Other Information
+------------------
+Chip Temperature: 32.00 °C
+
+Mains Frequency: 50.10 Hz
+
+PCB Temperature Sensor (NTC_IN VN):     31.73 ºC
+
+ADC Raw: 2770 > ADC Adjusted: 2770 > Calculated: 26.38 V

@@ -1,6 +1,6 @@
 The below example Serial ouput is based on DisplayRegisters with a false argument. Refresh Values and Display. Default false = Mute Expanded Info to Serial
 
-Only some Indexes hav a value, as defined in Domoticz Devices Setup. Example below
+Only some Indexes have a value, as defined in Domoticz Devices Setup. Example below
 
 		82	Dummy	00082082	1	iVoltage1	General	Voltage	246.31 V	-	2023-03-18 14:16:14
 		83	Dummy	00082083	1	iCT1	General	Current	0.03 A	-	-	2023-03-18 14:16:14
@@ -22,7 +22,7 @@ Only some Indexes hav a value, as defined in Domoticz Devices Setup. Example bel
 		99	Dummy	00082099	1	iPF2	General	Custom Sensor	0 PF	-	-	2023-03-18 13:19:05
 		100	Dummy	00082100	1	iPF3	General	Custom Sensor	0 PF	-	-	2023-03-18 13:19:12
 
-This translated to the Index setting example:
+This translated to the Index setting example within the IPEM Domoticz code.
 
 		/ Set these values to the Domoticz Devices Indexes (IDX).  If Zero, then entry is ignored. Device needs to be created in Domoticz.
 		int idxLineVoltage1 = 82;      // LineVoltage1 - Urms - Line 1 Voltage RMS

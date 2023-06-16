@@ -18,16 +18,18 @@
 #include <IPEM_EEPROM.h>
 #include <GyverOLED.h>
 #include <ATM90E3x.h>
+#include <PWM.h>
+#include <DAC.h> // Future Option
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES / CONSTANTS ****************
 
 // App
-String AppVersion = "230607";
+String AppVersion = "230616";
 String AppAcronym = "IPEM";
 String AppName = "DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code";
 
 // App USER
-String LocationName = "GTIL"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
+String LocationName = "House"; // Enter Location of Device such as House, Solar etc.  Used for Serial Monitor and OLED.
 
 // Constants USER
 int VoltageRawFactor = 0;                // ADC Raw Adjustment for 2048 @ 1.65V Default 0
@@ -47,9 +49,11 @@ boolean EnableOLEDLoop = true;                  // Set to true to enable OLED Di
 // CT4 Energy Monitor Library Configuration with ESP32 ADC as the forth input
 // Initialize EmonLib (111.1 = EmonCalibration value, adjust as needed)
 // NB.  EmonCalibration set to 260 for low current bring-up testing < 1.5A with Burden NOT connected.  Update Burden and Values as required.
+#if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
 float EmonCalibration = 260; // Used for bring-up EMON calibration value.  To be calibrated.  Default 1.
 float EmonCalcIrms = 7400;   // Calculate EMON Irms. Default 1480
 float EmonThreshold = 0.2;   // Used to squelch low values. Default 0.2
+#endif
 
 // Constants Application
 uint64_t chipid = ESP.getEfuseMac(); // Get ChipID (essentially the MAC address)
@@ -62,8 +66,10 @@ GyverOLED<SSD1306_128x32, OLED_BUFFER> oled; // 0.6"
 // GyverOLED<SSD1306_128x32, OLED_NO_BUFFER> oled;
 // GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
 
-// Create an Energy Monitor Library Instance (Used ONLY for CT4)
+// Create an Energy Monitor Library Instance (Used ONLY for CT4).  Ignore if CT4 Isolated or used for GPIO
+#if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
 EnergyMonitor emon1;
+#endif
 
 // **************** ATM90Ex CALIBRATION SETTINGS GUIDE ****************
 // LineFreq = 389 for 50 Hz (World)  4485 for (North America)
@@ -187,7 +193,6 @@ ATM90E3x eic{}; //
 #define ATM_CF4 34     // GPIO 34 (Digital ADC 1 CH6)
 #define ATM_IRQ0 13    // GPIO 13 (GPIO)
 #define ATM_IRQ1 14    // GPIO 14 (GPIO)
-#define CT4_IN 35      // GPIO 35 (Digital ADC 1 CH7)
 #define DCV_IN 36      // GPIO 36 (Analog VP / ADC 1 CH0)
 #define NTC_IN 39      // GPIO 39/VN (Analog ADC 1 CH3)
 #define User_Button 26 // GPIO 26 (DAC2 ADC2_CH9)
@@ -198,9 +203,12 @@ ATM90E3x eic{}; //
 #define LED_Green 4      // Green LED
 #define LED_Blue 15      // Blue LED
 
+// **************** CT4 ESP32 GPIO 35 FUNCTION ****************
+#define CT4_IN 35 // GPIO 35 (Digital ADC 1 CH7. NOT PWM!)
+
 // **************** ESP32 GPIO or UART2 ****************
-#define USR_GP16_RX 16 // GPIO 16 (Digital TTL_RXD)
-#define USR_GP17_TX 17 // GPIO 17 (Digital TTL_TXD)
+#define USR_GP16_RX_PWM 16 // GPIO 16 (Digital TTL_RXD PWM GPIO)
+#define USR_GP17_TX_PWM 17 // GPIO 17 (Digital TTL_TXD PWM GPIO)
 
 // Define I2C (Expansion Port)
 #define I2C_SDA 21
@@ -417,6 +425,7 @@ void ConfigureBoard()
   pinMode(LED_Red, OUTPUT);
   pinMode(LED_Green, OUTPUT);
   pinMode(LED_Blue, OUTPUT);
+  // pinMode(CT4_IN, OUTPUT);
 
   // LEDs Default Off State
   digitalWrite(LED_Red, HIGH);
@@ -429,12 +438,19 @@ void ConfigureBoard()
   // Initialize EEPROM
   InitializeEEPROM();
 
-// Initialize ADC and EmonLib
+  // Initialise PWM
+  InitialisePWM();
+
+  // Initialise DAC
+  InitialiseDAC();
+
+// Initialize ADC and EmonLib.
 #if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
   // adc1_config_channel_atten(ADC1_CHANNEL_7, ADC_ATTEN_DB_11);
   analogReadResolution(ADC_BITS);
   emon1.current(CT4_IN, EmonCalibration);
 #endif
+
 } // ConfigureBoard
 
 // Display Board Configuration
@@ -464,9 +480,13 @@ void DisplayBoardConfiguration()
   PrintUnderline("Hardware Configuration for ATM90E36");
 #endif
 
-  // ATM Status Values
-#if CT4_CONFIG == CT4_ATM && ATM90DEVICE == ATM90E32_DEVICE || CT4_ENABLED == false && ATM90DEVICE == ATM90E32_DEVICE || CT4_ATM == true && CT4_ENABLED == true
+  // CT4 Configuration / ATM Status Values
+#if CT4_CONFIG == CT4_ATM && ATM90DEVICE == ATM90E32_DEVICE || CT4_ATM == 90 && CT4_ENABLED == true
   Serial.println("* SOFTWARE CONFIGURATION ERROR *\n* You cannot have an ATM90E32 and I4N Input Selected (Change CT4_CONFIG) *\n");
+#endif
+
+#if CT4_ENABLED == true
+  Serial.println("* SOFTWARE CONFIGURATION ERROR *\n* You cannot Use CT4 as Current Clamp Input and GPIO Set (Check CT4_ENABLED, CT4_CONFIG) *\n");
 #endif
 
 #if ATM_SINGLEVOLTAGE == true
@@ -477,10 +497,6 @@ void DisplayBoardConfiguration()
 #else                       // USA Split Phase 120+120
   Serial.println("AC Voltage Inputs:\tMulti Dual V1 and V3 - USA Configuration");
 #endif
-#endif
-
-#if CT4_ISOLATED == true
-  Serial.println("CT4 ISOLATED!.  CT4 Input is Full Isolated and will not be included in Current Calculations");
 #endif
 
 #if ATM_SPLITPHASE == true
@@ -500,13 +516,13 @@ void DisplayBoardConfiguration()
 #endif
 #else
   // World
-#if CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false && ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false
+#if CT4_CONFIG == CT4_ESP && ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP
   Serial.println("Split AC Voltage:\tDual Split-Phase (V1-x-V3) Disabled");
   Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase + 1 Phase (ESP32)");
 #else
   Serial.println("Split AC Voltage:\tDual  or Split Voltage Input Disabled");
 
-#if CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE
   Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase + 1 Phase (I4N)");
 #else
   Serial.println("CT Current Clamps:\tConfigured for 1, 2, 3 Phase");
@@ -516,10 +532,10 @@ void DisplayBoardConfiguration()
 
 #endif
 
-#if CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false || ATM90DEVICE == ATM90E32_DEVICE && CT4_CONFIG == CT4_ESP && CT4_ISOLATED == false
+#if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE && CT4_CONFIG == CT4_ESP
   Serial.println("CT4 Current Input:\tConfigured for ESP32 ADC");
 #else
-#if CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE
   Serial.print("CT4 Current Input:\tConfigured for I4N on the ATM90E");
   Serial.println(ATM90DEVICE);
 #endif
@@ -758,11 +774,13 @@ void CheckDCVINVoltage()
 // Update Values as required in above Energy Monitor Library Configuration.
 void ReadCT4Current()
 {
+#if CT4_CONFIG == CT4_ESP || ATM90DEVICE == ATM90E32_DEVICE
   LineCurrentCT4 = emon1.calcIrms(EmonCalcIrms); // Calculate Irms only.
   LineCurrentCT4 = LineCurrentCT4 / 1000;
 
   // CT4 Squelch
   LineCurrentCT4 = NoiseFilterSquelch(LineCurrentCT4, EmonThreshold);
 
-  CalculatedPowerCT4 = LineCurrentCT4 * LineVoltage1; // Use Voltage Inpput 1 to calculate Power for CT4
+  CalculatedPowerCT4 = LineCurrentCT4 * LineVoltage1; // Use Voltage Input 1 to Calculate Power for CT4
+#endif
 } // ReadCT4Current

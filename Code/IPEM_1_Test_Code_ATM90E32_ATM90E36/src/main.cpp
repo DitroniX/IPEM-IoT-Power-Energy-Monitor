@@ -2,7 +2,7 @@
   Dave Williams, DitroniX 2019-2023 (ditronix.net)
   IPEM-1 ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitoring Energy Monitor v1.0
   Features include ESP32 IPEM ESP32 ATM90E32 ATM90E36 16bit ADC EEPROM 3Phase 3+1 CT-Clamps Current Voltage Frequency Power Factor GPIO I2C OLED SMPS D1 USB
-  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 7th June 2023
+  PCA 1.2302-20x - Test Code Firmware v1 - Development Code - WORK-IN-PROGRESS - 16th June 2023
 
   The purpose of this test code is to cycle through the various main functions of the board, as shown below, as part of board bring up testing.
 
@@ -23,7 +23,8 @@
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
   * CT4 Configured to ESP32 ADC (CT4_CONFIG CT4_ESP)
   * CT4 Input - Enabled (CT4_ENABLED true)
-  * CT4 Isolated from all Formulas - Disabled (CT4_ISOLATED false)
+  * PWM Output on Default GPIO Port GP17 (EnablePWMLocal false EnablePWMRemote false EnablePWMTestOutput false)
+  * DAC Output. Port TBD (EnableDACLocal false EnableDACRemote false EnableDACTestOutput false)
   * Multi-Voltage Input (ATM_SINGLEVOLTAGE true)
   * Split-Phase USA - Disabled (ATM_SPLITPHASE false)
   * Hardware Test - Enabled (DisableHardwareTest false)
@@ -52,17 +53,21 @@
   WiFi and OTA Updates
 
   * Setup WiFi
+  * Configure Multi-WiFi SSID/PWD
   * Setup Optional Static IP address and Gateway (DHCP or Static)
-  * Setup Hostname
+  * Setup Preferred Hostname
   * Setup Serial Device over IP (Used for OTA)
   * Display WiFI Signal Meter
-  * Web Server Informatin Page and Push OTA Updater
+  * Web Server Information Page and Push OTA Updater
+  * Web Listner
+  * PWM Switches added: /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
+  * DAC Switches added: /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
+  * Seperate switches dac-remote and pwm-remote, allow you to remotely send a fixed value to pwm / dac output.  Ideal for scenes etc.  Remote turns off or over-rides CT for pwm/dac.
 
   DOMOTICZ
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Publish to Domoticz Hardware Device Indexes
-  *
 
   MQTT
 
@@ -73,6 +78,29 @@
 
   * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
   * Configure Required Values to Publish to ThingSpeak
+
+  PWM Duty Cycle Output
+
+  * PWM (On Default GPIO 17), which will track Power Useage (from Default Variable ActivePowerExportCT1)
+  * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
+  * WebServer /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
+  * Ability to Enable and Disable PWM Local Readings
+  * Ability to Enable and Disable PWM Remote Readings
+  * Ability to Enable and Disable PWM Test Mode
+  * Abilty to Set Fixed Power from Remote Value, or Leave to Dynamic CT Power Values (WIP)
+  * Continuous PWM Cycle Test Mode Loop
+
+  DAC Voltage Output
+
+  * Fixed Voltage Output from DAC, tracking Power Useage (from Default Variable ActivePowerExportCT1)
+  * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
+  * WebServer /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
+  * Ability to Enable and Disable DAC Local Readings
+  * Ability to Enable and Disable DAC Remote Readings
+  * Ability to Enable and Disable DAC Test Mode
+  * Abilty to Set Fixed DAC Output from Remote Value, or Leave to Dynamic CT Power Values (WIP)
+  * DAC Sinewave Test Mode Loop (Default 10 Hz)
+  * DAC Stepped Voltages Test Mode Loop (Slow Staircase)
 
   Enjoy!  Dave Williams, DitroniX.net
 
@@ -109,6 +137,20 @@
 // Return Register Values from the ATM90E32, or ATM90E36, - and Display
 void DisplayRegisters(boolean DisplayFull = true)
 {
+
+  // PWM DutyCycle Output Pending Power Value. Test Usage: PWM_Power(2000)
+  if (EnablePWMLocal == true && EnablePWMRemote == false && EnablePWMTestOutput == false)
+    PWM_Power(ActivePowerExportCT1);
+
+  if (EnablePWMLocal == false && EnablePWMRemote == true && EnablePWMTestOutput == false)
+    PWM_Power(PWMRemotePower);
+
+  // DAC Voltage Output Pending Power Value. Test Usage: DAC_Power(2000)
+  if (EnableDACLocal == true && EnableDACRemote == false && EnableDACTestOutput == false)
+    DAC_Power(ActivePowerExportCT1);
+
+  if (EnableDACLocal == false && EnableDACRemote == true && EnableDACTestOutput == false)
+    DAC_Power(PWMRemotePower);
 
   // if (DisplayFull == false) // Display Expanded Information
   //   Serial.println("\nDisplay Output (DisplayRegisters false), Set to Minimised");
@@ -179,7 +221,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 
 #if ATM90DEVICE == ATM90E32_DEVICE || CT4_CONFIG == CT4_ESP
   ReadCT4Current();
-#if CT4_ENABLED == true && CT4_ISOLATED == false
+#if CT4_ENABLED == true
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3 + LineCurrentCT4);
 #else
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3);
@@ -187,7 +229,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 #endif
 
 // E36 Using I4N Input for Current
-#if ATM90DEVICE == ATM90E36_DEVICE && CT4_CONFIG == CT4_ATM && CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE && CT4_CONFIG == CT4_ATM
   LineCurrentCTN = NoiseFilterSquelch(eic.GetLineCurrentCTN());
   LineCurrentTotal = NoiseFilterSquelch(LineCurrentCT1 + LineCurrentCT2 + LineCurrentCT3);
 #endif
@@ -206,7 +248,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 
     Serial.println("Current CT3: " + String(LineCurrentCT3) + " A");
 
-#if ATM90DEVICE == ATM90E32_DEVICE && CT4_ENABLED == true && CT4_ISOLATED == false || CT4_CONFIG == CT4_ESP && CT4_ENABLED == true && CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E32_DEVICE && CT4_ENABLED == true || CT4_CONFIG == CT4_ESP && CT4_ENABLED == true
     Serial.println("Current CT4: " + String(LineCurrentCT4) + " A (ESP ADC1 CH7)");
 #endif
 
@@ -217,7 +259,7 @@ void DisplayRegisters(boolean DisplayFull = true)
 #if ATM_SPLITPHASE == true
     Serial.println("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~X~CT3)");
 #else
-#if CT4_ENABLED == true && CT4_ISOLATED == false
+#if CT4_ENABLED == true
     PrintSeparator("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~CT2~CT3~CT4)");
 #else
     PrintSeparator("Actual Total Current: " + String(LineCurrentTotal) + " A (CT1~CT2~CT3)");
@@ -235,7 +277,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   CalculatedPowerCT2 = LineVoltage1 * LineCurrentCT2;
   CalculatedPowerCT3 = LineVoltage1 * LineCurrentCT3;
 
-#if CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE
   CalculatedPowerCT4 = LineVoltage1 * LineCurrentCT4;
 #endif
 
@@ -246,9 +288,8 @@ void DisplayRegisters(boolean DisplayFull = true)
     Serial.println("Power V1*I2: " + String(CalculatedPowerCT2) + " W");
     Serial.println("Power V1*I3: " + String(CalculatedPowerCT3) + " W");
 
-#if CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE
     Serial.println("Power V1*I4: " + String(CalculatedPowerCT4) + " W");
-
 #endif
   }
 #else // Seperate Mains Voltages for Current Measurements
@@ -256,7 +297,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   CalculatedPowerCT2 = LineVoltage2 * LineCurrentCT2;
   CalculatedPowerCT3 = LineVoltage3 * LineCurrentCT3;
 
-#if CT4_ISOLATED == false
+#if ATM90DEVICE == ATM90E36_DEVICE
   CalculatedPowerCT4 = LineVoltage1 * LineCurrentCT4; // ESP32 ADC1 CH7 using V1
 #endif
 
@@ -267,7 +308,7 @@ void DisplayRegisters(boolean DisplayFull = true)
     Serial.println("Power V2*I2: " + String(CalculatedPowerCT2) + " W");
     Serial.println("Power V3*I3: " + String(CalculatedPowerCT3) + " W");
   }
-#if CT4_ENABLED == true && CT4_ISOLATED == false
+#if CT4_ENABLED == true && ATM90DEVICE == ATM90E36_DEVICE
   if (DisplayFull == true) // Display Expanded Information
   {
     Serial.println("Power V1*I4: " + String(CalculatedPowerCT4) + " W");
@@ -282,7 +323,7 @@ void DisplayRegisters(boolean DisplayFull = true)
   if (DisplayFull == true) // Display Expanded Information
     PrintSeparator("Calculated Total Power: " + String(CalculatedTotalPower) + " W (CT1~X~CT3)");
 #else // World
-#if CT4_CONFIG == CT4_ESP && CT4_ENABLED == true && CT4_ISOLATED == false
+#if CT4_CONFIG == CT4_ESP && CT4_ENABLED == true
   CalculatedTotalPower = (LineVoltage1 * LineCurrentCT1) + (LineVoltage2 * LineCurrentCT2) + (LineVoltage3 * LineCurrentCT3) + (LineVoltage1 * LineCurrentCT4);
 
   if (DisplayFull == true) // Display Expanded Information
@@ -407,7 +448,6 @@ void DisplayRegisters(boolean DisplayFull = true)
     PrintSeparator("Total ReActive Power: " + String(TotalReactivePower) + " VAR (CT1~CT2~CT3)");
 
     PrintSeparator("Calculated Total Reactive Power: " + String(CalculatedTotalReactivePower) + " W (CT1~CT2~CT3)");
-
     Serial.println("");
   }
 
@@ -427,7 +467,6 @@ void DisplayRegisters(boolean DisplayFull = true)
     PrintSeparator("Total Apparent Power: " + String(TotalApparentPower) + " VA (CT1~CT2~CT3)");
 
     PrintSeparator("Calculated Total Apparent Power: " + String(CalculatedTotalApparentPower) + " W (CT1~CT2~CT3)");
-
     Serial.println("\n");
   }
 
@@ -608,6 +647,8 @@ void setup()
   Serial.println(LocationName);
   Serial.println("");
 
+  PrintUnderline("Software Optons");
+
   // WiFi Integration Status
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -636,6 +677,16 @@ void setup()
   else
   {
     Serial.println("MQTT Publishing is Disabled");
+  }
+
+  // ThingSpeak Integration Status
+  if (EnableThingSpeak == true && WiFi.status() == WL_CONNECTED)
+  {
+    Serial.println("ThingSpeak Enabled - Register Values Will be Published");
+  }
+  else
+  {
+    Serial.println("ThingSpeak Publishing is Disabled");
   }
 
   // IPEM Board Port Configuration
@@ -695,10 +746,11 @@ void setup()
   Serial.println("");
 
   DisplayRegisters(); // Display once
+
 } // Setup
 
 // **************** LOOP ****************
-void loop()
+void loop() // Future - ISRs To Be Added
 {
 
   String sDIR = "";
@@ -706,8 +758,35 @@ void loop()
   // Basic Handler for WebServer
   CheckOTA();
 
-  // Simple test for Loop to bypass EnableBasicLoop if User Button Pressed for ~ 1 Second
-  if (EnableBasicLoop == true || digitalRead(User_Button) == LOW)
+  // Force Continuous Test PWM Cycle Loop. Force OFF EnablePWMLocal EnablePWMRemote
+  if (EnablePWMTestOutput == true)
+  {
+    EnablePWMLocal = false;
+    EnablePWMRemote = false;
+    PWM_Test();
+  }
+
+  // Force Continuous Test DAC Sinewave Cycle Loop etc. Force OFF EnableDACLocal EnableDACRemote
+  if (EnableDACTestOutput == true)
+  {
+    EnableDACLocal = false;
+    EnableDACRemote = false;
+
+    //  0 = Stepped Voltage  1 = SineWave @ 10Hz  2 = Fixed Output Voltage @ 1.5V
+    DAC_Test(0); // Stepped Voltage Output.  Ramps up and Down
+    // DAC_Test(1, 10);      // SineWave  // 1, 10, 50 Hz etc
+    // DAC_Test(2, 1.5); // Fixed DAC Ouput Voltage.  Example 1.5V Output
+  }
+
+  // Simply DisplayRegisters on Loop if Enabled
+  if (EnableBasicLoop == true)
+  {
+    DisplayRegisters();
+    Serial.println("- - - / / - - -\n");
+  }
+
+  // Simple test for Loop to bypass EnableBasicLoop if User Button Pressed for ~ 1 Second.  Ignore if ESP32 DAC used.
+  if (digitalRead(User_Button) == LOW && EnableDACTestOutput == false && EnablePWMLocal == false && EnableDACRemote == false)
   {
     DisplayRegisters();
     Serial.println("- - - / / - - -\n");
@@ -807,7 +886,7 @@ void loop()
       OLEDPrint("Line Volts", 2, 2);
       oled.update();
 
-      delay(2000);
+      delay(1500);
 
       // DisplayOLEDWiFiStatus
       DisplayOLEDWiFiStatus();

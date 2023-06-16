@@ -1,10 +1,28 @@
-Test Conditions.  Test 16th June 2023
-DitroniX Mains CT Bench Tester, with 3 x CT clamps on single phase to a Warmlite WL42005 Halogen Heater 1200W.
-Mains Voltage (~245V), to Greenbrook DAT01A transformer, with single 12V AC output to three Voltage inputs on IPEM (So we see correct readings over three phases).
-This is a production IPEM AT90E32 board, with no calibration or corrections applied - just default firmware values.
-Note: AC Voltage in, is a single AC supply with common to 1, 2 and 3 input.  Easy way, Short ATM to V1P (All three pads) and Link AC 1, 2 and 3.
+Std Prod PCA Bring Up.  Jumpers set.  AC In. Resistive Load.
+------------------------------------------------------------------------------------------------------------------------
+
+Settings. Default
+
+// **************** DEFINE Device ATM90E32 or ATM90E36 ****************
+#define ATM90E32_DEVICE 32
+#define ATM90E36_DEVICE 36
+
+// On IPEM, Set required ATM90E3x device, ATM90E32_DEVICE or ATM90E36_DEVICE
+#define ATM90DEVICE ATM90E32_DEVICE
+
+// **************** DEFINE Current Clamp Input CT4 ****************
+#define CT4_ATM 90 // ATM90E36 (N)
+#define CT4_ESP 32 // ESP32 ADC.  Suitable for both ATM90E32 or ATM90E36
+
+// CT4 Software Configuration.  Can be used for CT INPUT to ATM90E36, ESP32 GP35.
+#define CT4_CONFIG CT4_ESP // On IPEM, Set CT4 ADC Configuration.  CT4_ATM or CT4_ESP
+#define CT4_ENABLED false  // CT4 ESP32 Clamp (Default false)
+
+// **************** DEFINE VOLTAGE REFERENCE ****************
+#define ATM_SINGLEVOLTAGE false // Set to true to use V1/ATM_V1P for VoltageGain1, VoltageGain2, VoltageGain3 and Calcfulations for CT1, CT2, CT3, CT4, CTN.  (Default true)
 
 ------------------------------------------------------------------------------------------------------------------------
+
 
 DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code
 
@@ -58,52 +76,60 @@ Meter Status:           E0:0x20F                E1:0xFF
 
 Mains RMS Voltage
 ------------------
-- - - - - - - - - - - - - - - - - - - - - - - - - - -  
-Voltage 1: 245.74 V (Single Line Voltage Selected)     
+- - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Voltage 1: 249.13 V (Single Line Voltage Selected)
+
+Mains RMS Current
+------------------
+Current CT1: 0.66 A
+Current CT2: 0.66 A
+Current CT3: 0.66 A
+- - - - - - - - - - - - - - - - - - - - - - - 
+Actual Total Current: 1.98 A (CT1~CT2~CT3)
 
 Calculated RMS Power
 ---------------------
-Power V1*I1: 1204.13 W
-Power V1*I2: 1189.38 W
-Power V1*I3: 1194.30 W
+Power V1*I1: 164.43 W
+Power V1*I2: 164.43 W
+Power V1*I3: 164.43 W
 - - - - - - - - - - - - - - - - - - - - - - - - -
-Calculated Total Power: 3582.81 W (CT1~CT2~CT3)
+Calculated Total Power: 492.58 W (CT1~CT2~CT3)
 
 Active Power (Absorbed or Used by the Load)
 --------------------------------------------
-Active Power CT1: -1197.98 W    (Export)
-Active Power CT2: -1180.80 W    (Export)
-Active Power CT3: -1187.90 W    (Export)
-- - - - - - - - - - - - - - - - - - - - - -
-Total Active Power: -2385.93 W  (Export)
+Active Power CT1: -163.87 W     (Export)
+Active Power CT2: -162.18 W     (Export)
+Active Power CT3: -162.85 W     (Export)
+- - - - - - - - - - - - - - - - - - - - -
+Total Active Power: -326.75 W   (Export)
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Calculated Total Active Power: -3566.68 W (CT1~CT2~CT3)
+Calculated Total Active Power: -488.90 W (CT1~CT2~CT3)
 
 Re-Active Power
 ----------------
-ReActive Power CT1: -72.75 VAR
-ReActive Power CT2: -68.51 VAR
-ReActive Power CT3: -70.68 VAR
+ReActive Power CT1: -10.33 VAR
+ReActive Power CT2: -9.72 VAR
+ReActive Power CT3: -9.88 VAR
 - - - - - - - - - - - - - - - - - - - - - - - - -
-Total ReActive Power: -143.49 VAR (CT1~CT2~CT3)
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Calculated Total Reactive Power: -211.94 W (CT1~CT2~CT3)
+Total ReActive Power: -20.21 VAR (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Reactive Power: -29.93 W (CT1~CT2~CT3)
 
 Apparent Power (Total Amount of Power Flowing from Source to Load)
 -------------------------------------------------------------------
-Apparent Power CT1: 1201.35 VA
-Apparent Power CT2: 1183.88 VA
-Apparent Power CT3: 1191.30 VA
-- - - - - - - - - - - - - - - - - - - - - - - - -
-Total Apparent Power: 2392.42 VA (CT1~CT2~CT3)
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Calculated Total Apparent Power: 3576.53 W (CT1~CT2~CT3)
+Apparent Power CT1: 164.44 VA
+Apparent Power CT2: 162.70 VA
+Apparent Power CT3: 163.34 VA
+- - - - - - - - - - - - - - - - - - - - - - - - 
+Total Apparent Power: 327.78 VA (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Apparent Power: 490.48 W (CT1~CT2~CT3)
 
 Other Power Information
 ------------------------
-Total Fundamental Power: -2382.89 pH(t)
+Total Fundamental Power: -326.40 pH(t)
 
-Total Harmonic Power: -3.70
+Total Harmonic Power: -0.50
 
 Power Factor
 -------------
@@ -123,6 +149,8 @@ Other Information
 ------------------
 Chip Temperature: 32.00 °C
 
-Mains Frequency: 50.05 Hz
+Mains Frequency: 50.08 Hz
 
-PCB Temperature Sensor (NTC_IN VN):     31.11 ºC
+PCB Temperature Sensor (NTC_IN VN):     31.42 ºC
+
+ADC Raw: 2703 > ADC Adjusted: 2703 > Calculated: 25.74 V

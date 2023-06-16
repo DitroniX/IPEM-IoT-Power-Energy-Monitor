@@ -10,25 +10,25 @@
   Further information, details and examples can be found on our website wiki pages ditronix.net/wiki and also github.com/DitroniX
 */
 
+// Example Publish (play data), can be found on https://thingspeak.com/channels/2179490
+
 // Libraries
 #include "ThingSpeak.h" // https://github.com/mathworks/thingspeak-arduino/blob/master/README.md
 
 // ****************  VARIABLES / DEFINES / STATIC / STRUCTURES ****************
 
 // ThingSpeak Server info.  Setup with your ThingSpeak Configration
-unsigned long myChannelNumber1 = 0;        // ThingSpeak Channel ID 1
-const char *myWriteAPIKey1 = ""; // ThingSpeak Write API Key for Channel ID 1
-unsigned long myChannelNumber2 = 0;              // ThingSpeak Channel ID 2
-const char *yWriteAPIKey2 = "";                  // ThingSpeak Write API Key for Channel ID 2
-unsigned long myChannelNumber3 = 0;              // ThingSpeak Channel ID 3
-const char *myWriteAPIKey3 = "";                 // ThingSpeak Write API Key for Channel ID 3
-unsigned long myChannelNumber4 = 0;              // ThingSpeak Channel ID 4
-const char *myWriteAPIKey4 = "";                 // ThingSpeak Write API Key for Channel ID 4
+unsigned long myChannelNumber1 = 0; // ThingSpeak Channel ID 1
+const char *myWriteAPIKey1 = "";    // ThingSpeak Write API Key for Channel ID 1
+unsigned long myChannelNumber2 = 0; // ThingSpeak Channel ID 2
+const char *yWriteAPIKey2 = "";     // ThingSpeak Write API Key for Channel ID 2
+unsigned long myChannelNumber3 = 0; // ThingSpeak Channel ID 3
+const char *myWriteAPIKey3 = "";    // ThingSpeak Write API Key for Channel ID 3
+unsigned long myChannelNumber4 = 0; // ThingSpeak Channel ID 4
+const char *myWriteAPIKey4 = "";    // ThingSpeak Write API Key for Channel ID 4
 
 // Enable Publishing
 boolean EnableThingSpeak = false; // Change to true, to enable Loop reading and sending data to ThingSpeak.  Default false.
-
-// Example Publish (play data), can be found on https://thingspeak.com/channels/2179490
 
 // Initialise ThingSpeak
 void InitialiseThingSpeak()
@@ -81,19 +81,25 @@ void PublishThingSpeakValues()
   SetThingSpeakField(8, PCBTemperature), 1;
 
   /* Examples of Available Variables
-  LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
-  LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
-  CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower
-  ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower
-  ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
-  ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
-  ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower
-  ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower
-  TotalActiveFundPower, TotalActiveHarPower
-  PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
-  PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
-  ChipTemperature, LineFrequency
-  DCVoltage, PCBTemperature
+    LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
+    LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
+    CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower
+    ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower
+    ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
+    ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
+    ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower
+    ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower
+    TotalActiveFundPower, TotalActiveHarPower
+    PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
+    PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
+    ChipTemperature, LineFrequency
+    DCVoltage, PCBTemperature
+    PWMLocalPower, PWMRemotePower, PWMPowerOutput, PWMPowerPercentage
+    DACLocalPower, DACRemotePower, DACPowerPercentage, DACPowerOutput
+
+    *Control
+    EnablePWMLocal, EnablePWMRemote, EnablePWMTestOutput
+    EnableDACLocal, EnableDACRemote, EnableDACTestOutput
   */
 
   // NTP Time and Pre-Format Example Message for Channel Status Updates

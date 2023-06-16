@@ -1,0 +1,167 @@
+Std Prod PCA Bring Up.  Jumpers set.  AC In. Resistive Load. CT Clamp controlling DAC Output
+------------------------------------------------------------------------------------------------------------------------
+
+Settings. Default.  Load with varying Powershown at end of Diagnostic Report.
+
+DAC_Power(ActivePowerExportCT1);
+
+// Variables USER and External (Power Up Default)
+boolean EnableDACLocal = true;  // Enable/TurnOn DAC Local. Default(false) Soft Switch for Local Direct Control /DAC-On /DAC-Off
+boolean EnableDACRemote = false; // Enable/Allow DAC Remote Power Control. Default(false) Soft Switch for Remote Control /DAC-Remote
+
+// EnableDACTestOutput will over-ride EnableDACLocal and EnableDACRemote
+boolean EnableDACTestOutput = false; // Enable/TurnOn Continuous DAC Cycle Test.  Will Bypass Actual Readings. Default(false)
+
+------------------------------------------------------------------------------------------------------------------------
+
+DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code
+
+Initialise OLED (If Plugged In)
+
+Register Status and Startup Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616
+Board Location: House
+
+Software Optons
+----------------
+Wi-Fi is Disabled
+Domoticz Publishing is Disabled
+MQTT Publishing is Disabled
+ThingSpeak Publishing is Disabled
+
+EEPROM Check: 20        (Validation OK)
+
+PWM Output is Disabled
+
+DAC Output is Enabled from DACLocal
+DAC Maximum Power Limit:        0
+DAC Resolution Bit:             8
+DAC Maximum Resolution:         255
+DAC Scaling Factor:             0.000825
+
+Peripherals Test
+-----------------
+Testing RGB LED
+Scanning I2C Bus for Devices ...
+ * I2C device found at address Decimal 60 = Hex 0x3C OLED
+ * I2C device found at address Decimal 80 = Hex 0x50 EEPROM
+ * I2C Bus Scan Complete
+
+AC/DC Voltage Input Detected
+Connecting to the ATM90E32
+ATM90E32 Connected - OK
+IPEM Hardware Setup and Power-Up Test - Board Initialized
+
+Register Status and Diagnostic Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616   Location: House
+
+Hardware Configuration for ATM90E32
+------------------------------------
+AC Voltage Inputs:      Single Input V1 will be used for Current Phase Calculations
+Split AC Voltage:       Dual Split-Phase (V1-x-V3) Disabled
+CT Current Clamps:      Configured for 1, 2, 3 Phase + 1 Phase (ESP32)
+CT4 Current Input:      Configured for ESP32 ADC
+
+[Status Values]
+System Status:          S0:0x37E                S1:0xFFFE
+Meter Status:           E0:0x20F                E1:0xFF
+
+Mains RMS Voltage
+------------------
+- - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Voltage 1: 249.06 V (Single Line Voltage Selected)
+
+Mains RMS Current
+------------------
+Current CT1: 0.66 A
+Current CT2: 0.66 A
+Current CT3: 0.66 A
+- - - - - - - - - - - - - - - - - - - - - - -
+Actual Total Current: 1.98 A (CT1~CT2~CT3)
+
+Calculated RMS Power
+---------------------
+Power V1*I1: 164.38 W
+Power V1*I2: 164.38 W
+Power V1*I3: 164.38 W
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Power: 492.42 W (CT1~CT2~CT3)
+
+Active Power (Absorbed or Used by the Load)
+--------------------------------------------
+Active Power CT1: -163.91 W     (Export)
+Active Power CT2: -162.21 W     (Export)
+Active Power CT3: -162.87 W     (Export)
+- - - - - - - - - - - - - - - - - - - - -
+Total Active Power: -326.80 W   (Export)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Calculated Total Active Power: -488.99 W (CT1~CT2~CT3)
+
+Re-Active Power
+----------------
+ReActive Power CT1: -10.89 VAR
+ReActive Power CT2: -10.24 VAR
+ReActive Power CT3: -10.55 VAR
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Total ReActive Power: -21.44 VAR (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Calculated Total Reactive Power: -31.68 W (CT1~CT2~CT3)
+
+Apparent Power (Total Amount of Power Flowing from Source to Load)
+-------------------------------------------------------------------
+Apparent Power CT1: 164.38 VA
+Apparent Power CT2: 162.58 VA
+Apparent Power CT3: 163.28 VA
+- - - - - - - - - - - - - - - - - - - - - - - -
+Total Apparent Power: 327.70 VA (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Apparent Power: 490.24 W (CT1~CT2~CT3)
+
+Other Power Information
+------------------------
+Total Fundamental Power: -326.19 pH(t)
+
+Total Harmonic Power: -0.50
+
+Power Factor
+-------------
+Power Factor CT1: 0.00 PF
+Power Factor CT2: 0.00 PF
+Power Factor CT3: 0.00 PF
+- - - - - - - - - - - - - - -
+Total Power Factor: 0.00 PF
+
+Phase Angle
+------------
+Phase Angle CT1: 0.00
+Phase Angle CT2: 0.00
+Phase Angle CT3: 0.00
+
+Other Information
+------------------
+Chip Temperature: 33.00 °C
+
+Mains Frequency: 50.11 Hz
+
+PCB Temperature Sensor (NTC_IN VN):     32.68 ºC
+
+ADC Raw: 2776 > ADC Adjusted: 2776 > Calculated: 26.44 V
+
+Updated DAC Power: 163.91               Voltage: 0.14           4 %
+Updated DAC Power: 163.87               Voltage: 0.14           4 %
+Updated DAC Power: 313.62               Voltage: 0.26           7 %
+Updated DAC Power: 324.07               Voltage: 0.27           8 %
+Updated DAC Power: 323.85               Voltage: 0.27           8 %
+Updated DAC Power: 726.44               Voltage: 0.60           18 %
+Updated DAC Power: 725.60               Voltage: 0.60           18 %
+Updated DAC Power: 1203.96              Voltage: 0.99           30 %
+Updated DAC Power: 1131.11              Voltage: 0.93           28 %
+Updated DAC Power: 1128.36              Voltage: 0.93           28 %
+Updated DAC Power: 971.49               Voltage: 0.80           24 %
+Updated DAC Power: 969.29               Voltage: 0.80           24 %
+Updated DAC Power: 863.22               Voltage: 0.71           21 %
+Updated DAC Power: 808.88               Voltage: 0.67           20 %
+Updated DAC Output      DAC Off
+

@@ -1,0 +1,172 @@
+Std Prod PCA Bring Up.  Jumpers set.  AC In. Resistive Load.  CT Clamp controlling PWM Output
+------------------------------------------------------------------------------------------------------------------------
+
+Settings. Default.  Load with varying Powershown at end of Diagnostic Report.
+
+PWM_Power(ActivePowerExportCT1);
+
+// Variables USER and External (Power Up Default)
+boolean EnablePWMLocal = true;  // Enable/TurnOn PWM Local. Default(false) Soft Switch for Local Direct Control /PWM-On /PWM-Off
+boolean EnablePWMRemote = false; // Enable/Allow PWM Remote Power Control. Default(false) Soft Switch for Remote Control /PWM-Remote
+
+// Development and testing Use.  EnablePWMTestOutput will over-ride EnablePWMLocal and EnablePWMRemote
+boolean EnablePWMTestOutput = false; // Enable/TurnOn Continuous PWM Cycle Test.  Will Bypass Actual Readings. Default(false)
+
+------------------------------------------------------------------------------------------------------------------------
+
+DitroniX IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor Board - Development Code
+
+Initialise OLED (If Plugged In)
+
+Register Status and Startup Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616
+Board Location: House
+
+Software Optons
+----------------
+Wi-Fi is Disabled
+Domoticz Publishing is Disabled
+MQTT Publishing is Disabled
+ThingSpeak Publishing is Disabled
+
+EEPROM Check: 20        (Validation OK)
+
+PWM Output is Enabled from PWMLocal
+PWM Maximum Power Limit:        0
+PWM Resolution Bit:             14
+PWM Maximum Resolution:         16383
+PWM Scaling Factor:             0.244156
+
+DAC Output is Disabled
+
+Peripherals Test
+-----------------
+Testing RGB LED
+Scanning I2C Bus for Devices ...
+ * I2C device found at address Decimal 60 = Hex 0x3C OLED
+ * I2C device found at address Decimal 80 = Hex 0x50 EEPROM
+ * I2C Bus Scan Complete
+
+AC/DC Voltage Input Detected
+Connecting to the ATM90E32
+ATM90E32 Connected - OK
+IPEM Hardware Setup and Power-Up Test - Board Initialized
+
+Register Status and Diagnostic Report
+IPEM-1 ATM90E32 ATM90E36 IoT Power Energy Monitor
+ESP32 Serial ID: 5499FEEF49C0   Firmware Version: 230616   Location: House
+
+Hardware Configuration for ATM90E32
+------------------------------------
+AC Voltage Inputs:      Single Input V1 will be used for Current Phase Calculations
+Split AC Voltage:       Dual Split-Phase (V1-x-V3) Disabled
+CT Current Clamps:      Configured for 1, 2, 3 Phase + 1 Phase (ESP32)
+CT4 Current Input:      Configured for ESP32 ADC
+
+[Status Values]
+System Status:          S0:0x37E                S1:0xFFFE
+Meter Status:           E0:0x37F                E1:0xFF
+
+Mains RMS Voltage
+------------------
+- - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Voltage 1: 249.53 V (Single Line Voltage Selected)
+
+Mains RMS Current
+------------------
+Current CT1: 0.00 A
+Current CT2: 0.00 A
+Current CT3: 0.00 A
+- - - - - - - - - - - - - - - - - - - - - - -
+Actual Total Current: 0.00 A (CT1~CT2~CT3)
+
+Calculated RMS Power
+---------------------
+Power V1*I1: 0.00 W
+Power V1*I2: 0.00 W
+Power V1*I3: 0.00 W
+- - - - - - - - - - - - - - - - - - - - - - - - 
+Calculated Total Power: 0.00 W (CT1~CT2~CT3)
+
+Active Power (Absorbed or Used by the Load)
+--------------------------------------------
+Active Power CT1: 0.00 W
+Active Power CT2: 0.00 W
+Active Power CT3: 0.00 W 
+- - - - - - - - - - - - - - - -
+Total Active Power: 0.00 W
+- - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Active Power: 0.00 W (CT1~CT2~CT3)
+
+Re-Active Power
+----------------
+ReActive Power CT1: 0.24 VAR
+ReActive Power CT2: 0.22 VAR
+ReActive Power CT3: 0.28 VAR
+- - - - - - - - - - - - - - - - - - - - - - - - 
+Total ReActive Power: 0.52 VAR (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Reactive Power: 0.74 W (CT1~CT2~CT3)
+
+Apparent Power (Total Amount of Power Flowing from Source to Load)
+-------------------------------------------------------------------
+Apparent Power CT1: 0.75 VA
+Apparent Power CT2: 0.45 VA
+Apparent Power CT3: 0.79 VA
+- - - - - - - - - - - - - - - - - - - - - - - 
+Total Apparent Power: 1.53 VA (CT1~CT2~CT3)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Calculated Total Apparent Power: 1.99 W (CT1~CT2~CT3)
+
+Other Power Information
+------------------------
+Total Fundamental Power: -0.03 pH(t)
+
+Total Harmonic Power: 0.00 
+
+Power Factor
+-------------
+Power Factor CT1: 0.00 PF
+Power Factor CT2: 0.02 PF
+Power Factor CT3: 0.00 PF
+- - - - - - - - - - - - - - -
+Total Power Factor: 0.00 PF
+
+Phase Angle
+------------
+Phase Angle CT1: 117.50
+Phase Angle CT2: 107.00
+Phase Angle CT3: 79.80
+
+Other Information
+------------------
+Chip Temperature: 33.00 °C
+
+Mains Frequency: 50.09 Hz
+
+PCB Temperature Sensor (NTC_IN VN):     32.18 ºC
+
+ADC Raw: 2694 > ADC Adjusted: 2694 > Calculated: 25.66 V
+
+Updated PWM Power: 29.55                Duty Cycle: 121         0 %
+Updated PWM Power: 163.47               Duty Cycle: 669         4 %
+Updated PWM Power: 163.45               Duty Cycle: 669         4 %
+Updated PWM Power: 163.33               Duty Cycle: 668         4 %
+Updated PWM Power: 323.11               Duty Cycle: 1323                8 %
+Updated PWM Power: 161.07               Duty Cycle: 659         4 %
+Updated PWM Power: 161.10               Duty Cycle: 659         4 %
+Updated PWM Power: 161.18               Duty Cycle: 660         4 %
+Updated PWM Power: 323.25               Duty Cycle: 1323                8 %
+Updated PWM Power: 163.32               Duty Cycle: 668         4 %
+Updated PWM Power: 1611.57              Duty Cycle: 6600                40 %
+Updated PWM Power: 967.14               Duty Cycle: 3961                24 %
+Updated PWM Power: 1395.48              Duty Cycle: 5715                34 %
+Updated PWM Power: 1367.65              Duty Cycle: 5601                34 %
+Updated PWM Power: 1364.21              Duty Cycle: 5587                34 %
+Updated PWM Power: 1365.37              Duty Cycle: 5592                34 %
+Updated PWM Power: 1359.29              Duty Cycle: 5567                33 %
+Updated PWM Power: 886.63               Duty Cycle: 3631                22 %
+Updated PWM Power: 807.48               Duty Cycle: 3307                20 %
+Updated PWM Power: 399.41               Duty Cycle: 1635                9 %
+Updated PWM Power Duty Cycle:   PWM Off

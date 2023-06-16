@@ -24,7 +24,8 @@ const char *MQTTPassword = "";      // MQTT Password - if applicable
 String MQTTTopicMain = "ipem";      // MQTT Default Topic. Exclude the trailing /
 
 // Enable Publishing
-boolean EnableMQTT = false; // Change to true, to enable Loop reading and sending data to MQTT.  Default false.
+boolean EnableMQTT = true; // Change to true, to enable Loop reading and sending data to MQTT.  Default false.
+boolean EnableMQTTCallBack = true; // Under Development
 
 // MQTT Object / Client Instance
 PubSubClient mqtt_client(wlan_client);
@@ -109,8 +110,14 @@ void InitialiseMQTT()
     {
         // Initialise MQTT Connection and Instance
         mqtt_client.setServer(MQTTServer, MQTTPort);
-        // mqtt_client.setCallback(MQTTCallback);
+
+        // if (EnableMQTTCallBack == true)
+        //     mqtt_client.setCallback(MQTTCallback);
+
         Serial.println("Initialised MQTT");
+
+        // mqtt_client.subscribe("Light/Switch");
+        // mqtt_client.setCallback(MQTTCallback);
     }
 } // InitialiseMQTT
 
@@ -118,27 +125,49 @@ void InitialiseMQTT()
 void PublishMQTTValues()
 {
     // Test Message Example.
-    PublishMQTTMessage("LineVoltage1", LineVoltage1);
-    PublishMQTTMessage("ActivePowerCT1", ActivePowerCT1, 0);
-    PublishMQTTMessage("ActivePowerCT2", ActivePowerCT2, 0);
-    PublishMQTTMessage("ActivePowerCT3", ActivePowerCT3, 0);
-    PublishMQTTMessage("LineFrequency", LineFrequency, 2);
+    // PublishMQTTMessage("LineVoltage1", LineVoltage1);
+    // PublishMQTTMessage("ActivePowerCT1", ActivePowerCT1, 0);
+    // PublishMQTTMessage("ActivePowerCT2", ActivePowerCT2, 0);
+    // PublishMQTTMessage("ActivePowerCT3", ActivePowerCT3, 0);
+    // PublishMQTTMessage("LineFrequency", LineFrequency, 2);
 
     /* Examples of Available Variables
-    LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
-    LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
-    CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower
-    ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower
-    ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
-    ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
-    ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower
-    ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower
-    TotalActiveFundPower, TotalActiveHarPower
-    PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
-    PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
-    ChipTemperature, LineFrequency
+      LineVoltage1, LineVoltage2, LineVoltage3, LineVoltageTotal, LineVoltageAverage
+      LineCurrentCT1, LineCurrentCT2, LineCurrentCT3, LineCurrentCT4, LineCurrentCTN, LineCurrentTotal
+      CalculatedPowerCT1, CalculatedPowerCT2, CalculatedPowerCT3, CalculatedPowerCT4, CalculatedPowerCTN, CalculatedTotalPower
+      ActivePowerCT1, ActivePowerCT2, ActivePowerCT3, TotalActivePower, CalculatedTotalActivePower
+      ActivePowerImportCT1, ActivePowerImportCT2, ActivePowerImportCT3, TotalActivePowerImport
+      ActivePowerExportCT1, ActivePowerExportCT2, ActivePowerExportCT3, TotalActivePowerExport
+      ReactivePowerCT1, ReactivePowerCT2, ReactivePowerCT3, TotalReactivePower, CalculatedTotalReactivePower
+      ApparentPowerCT1, ApparentPowerCT2, ApparentPowerCT3, TotalApparentPower, CalculatedTotalApparentPower
+      TotalActiveFundPower, TotalActiveHarPower
+      PowerFactorCT1, PowerFactorCT2, PowerFactorCT3, TotalPowerFactor
+      PhaseAngleCT1, PhaseAngleCT2, PhaseAngleCT3
+      ChipTemperature, LineFrequency
+      DCVoltage, PCBTemperature
+      PWMLocalPower, PWMRemotePower, PWMPowerOutput, PWMPowerPercentage
+      DACLocalPower, DACRemotePower, DACPowerPercentage, DACPowerOutput
+
+      *Control
+      EnablePWMLocal, EnablePWMRemote, EnablePWMTestOutput
+      EnableDACLocal, EnableDACRemote, EnableDACTestOutput
     */
 
     Serial.println("");
 
 } // PublishMQTTValues
+
+// while (!client.connected())
+// {
+//     Serial.println("Connecting to MQTT...");
+//     if (client.connect("ESP32Client", mqttUser, mqttPassword))
+//     {
+//         Serial.println("connected " + String(client.state()));
+//         client.subscribe(topic, "XXXX");
+//     }
+//     else
+//     {
+//         Serial.print("failed with state ");
+//         Serial.print(client.state());
+//         delay(2000);
+//     }
