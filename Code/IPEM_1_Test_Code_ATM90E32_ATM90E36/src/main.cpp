@@ -17,7 +17,7 @@
   Base 90E32/36 register formulation based on the excellent ground work from Tisham Dhar, whatnick | ATM90E32 ATM90E36 Energy Monitor Core
   VSCode base, E32/E36 Registers/Code Merged, Updated, Software Logic/Routines, Bring Up Firmware, Comprehensive Functions, OTA and Domoticz Integration by Date Williams
 
-  CONFIGURATION (Setup for bring-up testing of the board)
+   **CONFIGURATION** (Setup for bring-up testing of the board)
 
   This version of firmware code is by default, configured for:
   * ATM90E32 (ATM90DEVICE ATM90E32_DEVICE)
@@ -38,7 +38,7 @@
   * Board Location and Firmware Version to OLED and Serial Monitor
   * IP Address Defaults to DHCP.  Static IP Address Configuration in WiFi-OTA.h
 
-  CALIBRATION (This should be minimal - based on the below)
+  **CALIBRATION** (This should be minimal - based on the below)
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
   * Current Clamp default example settings are based on SCT-013-000 100A/50mA.
@@ -50,7 +50,7 @@
   * You can update board ATM Configurations in ATM90E3x.h
   * You can update CT4 calibration in iPEM_Hardware.h - See EmonLib
 
-  WiFi and OTA Updates
+  **WiFi and OTA Updates**
 
   * Setup WiFi
   * Configure Multi-WiFi SSID/PWD
@@ -64,35 +64,35 @@
   * DAC Switches added: /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
   * Seperate switches dac-remote and pwm-remote, allow you to remotely send a fixed value to pwm / dac output.  Ideal for scenes etc.  Remote turns off or over-rides CT for pwm/dac.
 
-  DOMOTICZ
+  **DOMOTICZ**
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Publish to Domoticz Hardware Device Indexes
 
-  MQTT
+  **MQTT**
 
   * Setup connection to MQTT Broker / Home Automation
   * Configure Required Values to Publish to MQTT Broker
 
-  ThingSpeak
-
+  **ThingSpeak**
+  * Example Publish (play data), can be found on https://thingspeak.com/channels/2179490
   * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
   * Configure Required Values to Publish to ThingSpeak
 
-  PWM Duty Cycle Output
+  **PWM Duty Cycle Output**
 
-  * PWM (On Default GPIO 17), which will track Power Useage (from Default Variable ActivePowerExportCT1)
+  * PWM (On Default GPIO 17), which will track Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
   * WebServer /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
   * Ability to Enable and Disable PWM Local Readings
   * Ability to Enable and Disable PWM Remote Readings
   * Ability to Enable and Disable PWM Test Mode
-  * Abilty to Set Fixed Power from Remote Value, or Leave to Dynamic CT Power Values (WIP)
+  * Ability  to Set Fixed Power from Remote Value, or Leave to Dynamic CT Power Values (WIP)
   * Continuous PWM Cycle Test Mode Loop
 
-  DAC Voltage Output
+  **DAC Voltage Output**
 
-  * Fixed Voltage Output from DAC, tracking Power Useage (from Default Variable ActivePowerExportCT1)
+  * Fixed Voltage Output from DAC, tracking Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
   * WebServer /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
   * Ability to Enable and Disable DAC Local Readings
