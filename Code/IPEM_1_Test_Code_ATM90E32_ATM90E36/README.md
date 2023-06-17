@@ -2,6 +2,8 @@
 Further details on this code options can be found in our Wiki
 https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E32-ATM90E36-Test-Code
 
+https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki
+
   PCA 1.2302-20x - Test Code Firmware v1 - **Development Code - WORK-IN-PROGRESS**
   
     > FIRMWARE CONFIGURATION INFO WIKI > https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Firmware-Configuration-and-Flashing
@@ -36,6 +38,10 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Board Location and Firmware Version to OLED and Serial Monitor
   * IP Address Defaults to DHCP.  Static IP Address Configuration in WiFi-OTA.h
 
+  **AC Mains Voltage**  https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/AC-Mains-Voltage-Input
+    * The board has 3 x AC Voltage Inputs (ATM_V1P, ATM_V2P and ATM_V3P). 
+    * The AC Terminal block powering the board, also connects to ATM_V1P by default.  
+
   **CALIBRATION** (This should be minimal - based on the below)
 
   This version of firmware has been setup for ATM90E32 and CT4 to ESP32 ADC.
@@ -57,12 +63,15 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Setup Serial Device over IP (Used for OTA)
   * Display WiFI Signal Meter
   * Web Server Information Page and Push OTA Updater
+
+  **Webserver** https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/WebServer-Commands
+
   * Web Listner
   * PWM Switches added: /pwm-local, /pwm-remote, /pwm-on, /pwm-off, /pwm-test
   * DAC Switches added: /dac-local, /dac-remote, /dac-on, /dac-off, /dac-test
   * Seperate switches dac-remote and pwm-remote, allow you to remotely send a fixed value to pwm / dac output.  Ideal for scenes etc.  Remote turns off or over-rides CT for pwm/dac.
 
-  **DOMOTICZ**
+  **DOMOTICZ** https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/Domoticz-Variables
 
   * Setup connection to Domoticz Home Automation
   * Configure Required Values to Publish to Domoticz Hardware Device Indexes
@@ -72,12 +81,12 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Setup connection to MQTT Broker / Home Automation
   * Configure Required Values to Publish to MQTT Broker
 
-  **ThingSpeak**
+  **ThingSpeak** https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/ThingSpeak-Publishing
   * Example Publish (play data), can be found on https://thingspeak.com/channels/2179490
   * Setup easy connection to ThingSpeak Cloud Base Server / Home Automation.  FREE Cloud Account.  View on Phone/Web.
   * Configure Required Values to Publish to ThingSpeak
 
-  **PWM Duty Cycle Output**
+  **PWM Duty Cycle Output** https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/PWM-Output-(Tracking-Power)
 
   * PWM (On Default GPIO 17), which will track Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
@@ -88,7 +97,7 @@ https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/IPEM-ESP32-ATM90E
   * Ability to Set Fixed Power from Remote Value, or Leave to Dynamic CT Power Values (WIP)
   * Continuous PWM Cycle Test Mode Loop
 
-  **DAC Voltage Output**
+  **DAC Voltage Output**  https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/wiki/DAC-Output-(Tracking-Power)
 
   * Fixed Voltage Output from DAC, tracking Power Usage (from Default Variable ActivePowerExportCT1)
   * Output Updated on Each DisplayRegisters Loop (Only if Value Changed)
