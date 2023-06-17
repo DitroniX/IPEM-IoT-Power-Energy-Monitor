@@ -21,7 +21,7 @@ The IPEM Kit
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/06/IPEM-ThingSpeak-Example.png?raw=true)
 
 **IPEM Example Real-Time Output to ThingSpeak into ThingChart on Mobile Phone App**
-![Display-Type-B](https://hackster.imgix.net/uploads/attachments/1602282/ipem_thingspeak_-_thingchart_app_WLh2JVkBZ2.jpg?auto=compress%2Cformat&w=740&h=555&fit=max?raw=true)
+![Display-Type-B](https://hackster.imgix.net/uploads/attachments/1602282/ipem_thingspeak_-_thingchart_app_WLh2JVkBZ2.jpg?raw=true)
 
 Four fully tested versions of this board are available. Thye most popular being ESP32E (PCB Ant), plus ATM90E32.
 
