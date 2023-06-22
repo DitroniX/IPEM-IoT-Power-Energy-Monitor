@@ -13,7 +13,7 @@ Secondary Output
 8 = 12.8V RMS AC	16.43 DC
 12 = 19.23V RMS AC	
 
-The 12V Output setting performs the best and IPEM ATM90E26 VP Input has been designed for this.
+The 12V Output setting performs the best and IPEM ATM90E32 VP Input has been designed for this.
 
 Note: IPEM AP SMPS Regulator Input Voltage, Absolute Max: 32 V DC
 
