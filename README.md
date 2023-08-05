@@ -1,8 +1,10 @@
 ## IPEM ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitor SDK
 
 The IPEM Kit
-
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/07/IPEM-ESP32-ATM90E32-ATM90E36-Variant-SDK-1.2303.202P-Kit-scaled.jpg?raw=true)
+
+IPEM with OLED
+![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/08/IPEM-with-OLED-Display.jpg?raw=true)
 
 **DitroniX.net Power Energy Monitor Boards SDK Overview**
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/08/DitroniX.net-Power-Energy-Monitor-Boards-SDK-Overview-scaled.jpg?raw=true)
