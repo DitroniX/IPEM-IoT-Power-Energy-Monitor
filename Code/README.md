@@ -2,6 +2,8 @@
 
 ------------
 
+**NEW FIRMWARE**: [**FliX**](https://github.com/DitroniX/FLIX-DitroniX-Power-Energy-Monitors-Firmware) is an Integrated Firmware for DitroniX Power Energy Monitor SDK Boards
+
 This folder contains IPEM Example Source Code.
 
 The main develpment code is https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/tree/main/Code/IPEM_1_Test_Code_ATM90E32_ATM90E36
