@@ -1,10 +1,9 @@
 ## IPEM ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitor SDK
 
+**NEW FIRMWARE**: [**FliX**](https://github.com/DitroniX/FLIX-DitroniX-Power-Energy-Monitors-Firmware) is an Integrated Firmware for DitroniX Power Energy Monitor SDK Boards
+
 IPEM Overview
 ![Display-Type-B](https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/blob/main/Datasheets%20and%20Information/IPEM%20Power%20Energy%20Monitor%20Board%20Overview.jpg?raw=true)
-
-
-
 
 The IPEM Kit
 ![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/07/IPEM-ESP32-ATM90E32-ATM90E36-Variant-SDK-1.2303.202P-Kit-scaled.jpg?raw=true)
