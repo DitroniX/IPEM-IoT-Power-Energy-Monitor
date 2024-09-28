@@ -174,7 +174,7 @@ We value our Customers, Users of our designs and STEM Communities, all over the 
 * [Supporting the STEM Projects - BuyMeACoffee](https://www.buymeacoffee.com/DitroniX)
 *  **LinkedIN**: [https://www.linkedin.com/in/g8puo/](https://www.linkedin.com/in/g8puo/)
 
-***Dave Williams, Eastbourne, UK.***
+***Dave Williams, Maidstone, UK.***
 
 Electronics Engineer | Software Developer | R&D Support | RF Engineering | Product Certification and Testing | STEM Ambassador
 
