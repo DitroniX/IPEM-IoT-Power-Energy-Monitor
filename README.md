@@ -50,17 +50,9 @@ board variants will have FOUR CT inputs.
 
 ------------
 
-**IPEM 'Production PCB**
+**IPEM with Transformer**
 
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/03/IPEM-ESP32-ATM90E32-ATM90E36-SDK-1.2303.202P-Component-Placement.png?raw=true)
-
-**ATM90E32**
-
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E32-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
-
-**ATM90E36**
-
-![Display-Type-B](https://ditronix.net/wp-content/uploads/2023/02/IPEM-ESP32-ATM90E36-IoT-Power-Energy-Monitor-Board-Solder-Links-scaled.jpg?raw=true)
+![Display-Type-B](https://github.com/DitroniX/IPEM-IoT-Power-Energy-Monitor/blob/main/Datasheets%20and%20Information/IPEM%20with%20Transformer.jpg?raw=true)
 
 
  The **IPEM IoT Power Energy Monitor** board main features:
