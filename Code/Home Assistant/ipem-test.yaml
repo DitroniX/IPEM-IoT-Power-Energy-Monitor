@@ -1,0 +1,147 @@
+# Working Test
+
+esphome:
+  name: ipec-test
+  friendly_name: IPEM Test
+  on_boot:
+    priority: 100 # Highest priority, ensures light turns on without delay.
+    then:
+      - output.turn_on: gpio_d1
+      - output.turn_on: gpio_d2
+
+substitutions:
+  default_gain_voltage: '38800'
+  default_gain_ct: '38500'
+  default_pga_gain: 4X
+  default_interval_time: 1s  
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "##"
+
+ota:
+  - platform: esphome
+    password: !secret ipec_test_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "##"
+    password: !secret ipec_test_ap_password
+
+captive_portal:
+
+output:
+  - platform: gpio
+    pin: GPIO04
+    id: gpio_d1
+
+  - platform: gpio
+    pin: GPIO15
+    id: gpio_d2
+
+status_led:
+  pin: GPIO02
+
+font:
+  - file: 'fonts/Arial.ttf'
+    id: font8
+    size: 14
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+  id: bus_a
+
+display:
+  - platform: ssd1306_i2c
+    id: i2cdisplay
+    model: "SSD1306 128x32"
+    #reset_pin: D0
+    address: 0x3C
+    pages:
+      - id: page1
+        lambda: |-
+          it.printf(0, 0, id(font8), TextAlign::TOP_LEFT, "CT1 %.2fW", id(CT1CURR).state);
+      - id: page2
+        lambda: |-
+          it.printf(0, 0, id(font8), TextAlign::TOP_LEFT, "CT2 %.2fW", id(CT2CURR).state);
+      - id: page3
+        lambda: |-
+          it.printf(0, 0, id(font8), TextAlign::TOP_LEFT, "CT3 %.2fW", id(CT3CURR).state);
+
+interval:
+  - interval: 5s
+    then:
+      - display.page.show_next: i2cdisplay
+      - component.update: i2cdisplay
+
+spi:
+  clk_pin: 18
+  miso_pin: 19
+  mosi_pin: 23
+
+sensor:
+  - platform: atm90e32
+    id: ctclamp
+    cs_pin: 5
+    phase_a:
+      voltage:
+        name: "IPEM Line Voltage"
+      current:
+        name: "IPEM CT1 Current"
+      power:
+        name: "IPEM Active Power CT1"
+        id: CT1CURR
+      reactive_power:
+        name: "IPEM Reactive Power CT1"
+      power_factor:
+        name: "IPEM Power Factor CT1"
+      gain_voltage: ${default_gain_voltage}
+      gain_ct: ${default_gain_ct}
+    phase_b:
+      current:
+        name: "IPEM CT2 Current"
+      power:
+        name: "IPEM Active Power CT2"
+        id: CT2CURR
+      reactive_power:
+        name: "IPEM Reactive Power CT2"
+      power_factor:
+        name: "IPEM Power Factor CT2"
+      gain_voltage: ${default_gain_voltage}
+      gain_ct: ${default_gain_ct}
+    phase_c:
+      current:
+        name: "IPEM CT3 Current"
+      power:
+        name: "IPEM Active Power CT3"
+        id: CT3CURR
+      reactive_power:
+        name: "IPEM Reactive Power CT3"
+      power_factor:
+        name: "IPEM Power Factor CT3"
+      gain_voltage: ${default_gain_voltage}
+      gain_ct: ${default_gain_ct}
+    frequency:
+      name: "IPEM Line Frequency"
+    chip_temperature:
+      name: "IPEM Chip Temperature"
+    line_frequency: 50Hz
+    current_phases: 3
+    gain_pga: ${default_pga_gain}
+    update_interval: ${default_interval_time}
+
