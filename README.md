@@ -1,5 +1,14 @@
 ## IPEM ESP32 ATM90E32 ATM90E36 IoT Power Energy Monitor SDK
 
+### NOTE: 20th March 2026. This version of IPEM has been superseded with the new improved [IPEM Plus](https://github.com/DitroniX/IPEM-Plus-ESP32-C5-LoRa-LoRaWAN-IoT-Mains-Power-Energy-Monitor)
+**IPEM Plus**  is a self-contained ESP32-C5 based IoT monitoring board. Ideal for local, or remoting, monitoring requirements.
+
+**IPEM Plus**  connectivity allows Wi-Fi connections to 2.4GHz or 5GHz, with Bluetooth, Thread and Zigbee. In addition, you may also use the inbuilt LoRa Radio IoT 850 MHz through to 930 MHz.
+
+### [Compare Mains Power IoT Energy Monitors](https://github.com/DitroniX/IPEM-Plus-ESP32-C5-LoRa-LoRaWAN-IoT-Mains-Power-Energy-Monitor/wiki/Compare-Mains-Power-IoT-Energy-Monitors)
+-----------
+### Original IPEM E32 and E36
+
 **250112 UPDATED FIRMWARE**: [**FliX**](https://github.com/DitroniX/FLIX-DitroniX-Power-Energy-Monitors-Firmware) is an Integrated Firmware for DitroniX Power Energy Monitor SDK Boards
 
 IPEM Overview
